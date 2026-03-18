@@ -234,6 +234,7 @@
             <button class="filter-btn" data-filter="analyse">Analyse</button>
             <button class="filter-btn" data-filter="auto">Automatisation</button>
             <button class="filter-btn" data-filter="viz">Visualisation</button>
+	    <button class="filter-btn" data-filter="recherche">Recherche</button>
         </div>
     </div>
     <div class="projects-grid" id="projects-grid"></div>
@@ -251,15 +252,14 @@
     <div class="contact-right">
         <div class="contact-item">
             <i class="fas fa-envelope"></i>
-            <div><h4>Email</h4><a href="/cdn-cgi/l/email-protection#b8ced7cccaddf8ddd5d9d1d496dbd7d5"><span class="__cf_email__" data-cfemail="c3b5acb7b1a683a6aea2aaafeda0acae">[email&#160;protected]</span></a></div>
-        </div>
+<div><h4>Email</h4><a href="mailto:hissabe.pro@gmail.com">hissabe.pro@gmail.com</a></div></div>
         <div class="contact-item">
             <i class="fab fa-linkedin"></i>
-            <div><h4>LinkedIn</h4><a href="https://linkedin.com/in/" target="_blank">linkedin.com/in/hissa-berton</a></div>
+            <div><h4>LinkedIn</h4><a href="https://www.linkedin.com/public-profile/settings?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_self_edit_contact-info%3Bod6hRXs%2BSGS2sf5OkrZk0g%3D%3D" target="_blank">linkedin.com/in/hissa-berton</a></div>
         </div>
         <div class="contact-item">
             <i class="fab fa-github"></i>
-            <div><h4>GitHub</h4><a href="https://github.com/" target="_blank">github.com/hissaberton</a></div>
+            <div><h4>GitHub</h4><a href="https://github.com/hissabepro-collab/Portfolio" target="_blank">github.com/hissaberton</a></div>
         </div>
     </div>
 </section>
@@ -284,9 +284,9 @@ const projects = [
         title: "Modele predictif d attrition client",
         cat: "analyse",
         catLabel: "Machine Learning",
-        desc: "Nettoyage complet d un dataset telecom (valeurs manquantes, harmonisation, mise a l echelle), analyse exploratoire et entrainement d un Random Forest pour predire la resiliation client. Pipeline documente de bout en bout.",
+        desc: "Nettoyage complet d un dataset telecom (valeurs manquantes, harmonisation, mise a l'echelle), analyse exploratoire et entrainement d'un Random Forest pour predire la resiliation client. Pipeline documenté de bout en bout.",
         tags: ["Python", "Pandas", "Scikit-learn", "Random Forest", "EDA"],
-        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/Mod%C3%A8le_pr%C3%A9dictif_d'attrition_client.ipynb",
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Mod%C3%A8le_pr%C3%A9dictif_d'attrition_client.ipynb",
         demo: null
     },
     {
@@ -296,7 +296,7 @@ const projects = [
         catLabel: "Data Preparation",
         desc: "Audit complet d un dataset client telecom : detection d incoherences, imputation intelligente, harmonisation des categories et mise a l echelle. Modelisation Random Forest en sortie.",
         tags: ["Python", "Pandas", "Nettoyage", "Feature Engineering", "Random Forest"],
-        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/Fiabilisation%20d'un%20dataset%20client%20et%20pr%C3%A9diction%20de%20l'attrition%20t%C3%A9l%C3%A9com.ipynb",
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Fiabilisation%20d'un%20dataset%20client%20et%20pr%C3%A9diction%20de%20l'attrition%20t%C3%A9l%C3%A9com.ipynb",
         demo: null
     },
     {
@@ -306,7 +306,7 @@ const projects = [
         catLabel: "NLP / Text Mining",
         desc: "Analyse des commentaires YouTube d une campagne d influence sponsorisee par Credit Agricole du Languedoc. Sentiment analysis, topic modeling BERTopic, NER et score d engagement.",
         tags: ["Python", "BERTopic", "NLP", "YouTube API", "Sentiment Analysis"],
-        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/Analyse_s%C3%A9mantique_d'une_campagne_d'influence.ipynb",
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Analyse_s%C3%A9mantique_d'une_campagne_d'influence.ipynb",
         demo: null
     },
     {
@@ -316,8 +316,8 @@ const projects = [
         catLabel: "Statistiques / R",
         desc: "Regression logistique sur un dataset de 303 patients cardiaques. Verification des conditions (regle des 10, surdispersion), calcul des Odds Ratios, intervalles de confiance et visualisation Forest Plot.",
         tags: ["R", "GLM", "Odds Ratio", "Regression logistique", "ggplot2"],
-        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/R%C3%A9gression%20logistique%20%E2%80%94%20Facteurs%20de%20risque%20cardiaque.R",
-        demo: "Fournel.pdf"
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/R%C3%A9gression%20logistique%20%E2%80%94%20Facteurs%20de%20risque%20cardiaque.R",
+        demo:"Regression_logistique_cardiaque.pdf"
     },
     {
         id: 5,
@@ -326,8 +326,10 @@ const projects = [
         catLabel: "Data Visualisation",
         desc: "Dashboard multi-vues pour un CRM : CA, marges, tops/flops clients, analyse textuelle des verbatims, NPS, performance commerciale et pipeline. Realise en equipe (Paco Privat, Eric Assogba, Hissa Berton).",
         tags: ["DataViz", "Dashboard", "NPS", "Storytelling", "CRM"],
-        github: null,
-	demo: "https://app.dataviv.net/reporting/test/fd7ec1e8-2da5-496e-bbd6-08de694fd9b1"
+        github: "https://d.dataviv.net/r/kvWxtYJylS",
+	demo: "Dashboard_Corumis_Solutions.pdf"
+	
+
     },
     {
         id: 6,
@@ -341,13 +343,44 @@ const projects = [
     },
     {
         id: 7,
-        title: "Segmentation comportementale du portefeuille client — Credit Agricole",
-        cat: "analyse",
-        catLabel: "Analyse SAS",
+        title: "Mémoire Master 1",
+        cat: "recherche",
+        catLabel: "Recherche scientifique",
         desc: "Analyse segmentee de portefeuilles clients sur AGE, REVENUS, CSP, SEGMENT EMACO. Jointures entre tables CLIENTS, PARTENAIRE et MTT avec production de tableaux de synthese ordonnes.",
         tags: ["SAS EG", "PROC SQL", "Jointures", "Statistiques"],
         github: null,
         demo: null
+    }
+,{
+        id: 8,
+        title: "Automatisation de workflows — N8N",
+        cat: "automatisation",
+        catLabel: "Automatisation",
+        desc: "Conception et deploiement de workflows automatises avec N8N — connexion d APIs, traitement de donnees et orchestration de taches recurrentes sans code.",
+        tags: ["N8N", "Automatisation", "API", "Workflow", "No-code"],
+        github: null,
+        demo: null
+    },
+    {
+        id: 9,
+        title: "Generateur de donnees CSV fictives",
+        cat: "auto",
+        catLabel: "Automatisation",
+        desc: "Outil de generation de jeux de donnees fictives et coherentes pour s entrainer sur des projets data en conditions reelles. Parametrable selon le secteur et le type de variables.",
+        tags: ["Python", "CSV", "Data", "Generateur"],
+        github: null,
+        demo: null
+    },
+{
+        id: 10,
+        title: "CV - Hissa Berton",
+        cat: "recherche",
+        catLabel: "Curriculum Vitae",
+        desc: "Outil de generation de jeux de donnees fictives et coherentes pour s entrainer sur des projets data en conditions reelles. Parametrable selon le secteur et le type de variables.",
+        tags: ["Python", "CSV", "Data", "Generateur"],
+        github: null,
+	demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/CV%20Hissa%20Berton.pdf"
+
     }
 ];
 
@@ -356,7 +389,12 @@ function renderProjects(filter) {
     grid.innerHTML = '';
     const filtered = filter === 'all' ? projects : projects.filter(p => p.cat === filter);
     filtered.forEach(p => {
-        const codeBtn = p.github ? `<a href="${p.github}" class="project-link code" target="_blank"><i class="fab fa-github"></i> Code</a>` : '';
+        const codeBtn = p.github
+    ? (p.id === 5
+        ? `<a href="${p.github}" class="project-link demo demo-sphinx" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`
+        : `<a href="${p.github}" class="project-link code" target="_blank"><i class="fab fa-github"></i> Code</a>`)
+    : '';
+
         const demoBtn = p.demo
             ? (p.demo.endsWith('.pdf')
                 ? `<a href="${p.demo}" class="project-link demo" target="_blank"><i class="fas fa-file-pdf"></i> Voir PDF</a>`
