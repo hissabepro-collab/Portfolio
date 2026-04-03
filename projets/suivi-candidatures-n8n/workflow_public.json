@@ -1,0 +1,264 @@
+{
+  "name": "Suivi Candidatures — Hissa Berton",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "sender": "",
+          "subject": ""
+        },
+        "options": {
+          "dataPropertyAttachmentsPrefixName": "attachment_"
+        }
+      },
+      "id": "node_gmail_trigger",
+      "name": "Gmail — Surveiller emails",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ],
+      "notes": "Surveille ta boîte Gmail pour détecter les emails de confirmation de candidatures LinkedIn, Indeed, WTTJ, Apec, Cadremploi, RegionsJob, Hellowork, Jobteaser, Glassdoor"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "linkedin"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "indeed"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "welcometothejungle"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "wttj"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "apec"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "cadremploi"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "regionsjob"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "hellowork"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "jobteaser"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "glassdoor"
+            },
+            {
+              "value1": "={{ $json.Sujet }}",
+              "operation": "contains",
+              "value2": "candidature"
+            },
+            {
+              "value1": "={{ $json.Sujet }}",
+              "operation": "contains",
+              "value2": "application"
+            },
+            {
+              "value1": "={{ $json.Sujet }}",
+              "operation": "contains",
+              "value2": "vous avez postulé"
+            },
+            {
+              "value1": "={{ $json.Sujet }}",
+              "operation": "contains",
+              "value2": "you applied"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "node_filter_platforms",
+      "name": "Filtrer — Plateformes emploi",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ],
+      "notes": "Vérifie que l'email vient bien d'une plateforme d'emploi connue — toutes les 9 plateformes + mots-clés subject"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst subjectOrig = item.Sujet || item.subject || '';\nconst subject = subjectOrig.toLowerCase();\nconst bodyOrig = item['charge utile'] || item.text || item.html || item.snippet || '';\nconst body = bodyOrig.toLowerCase();\nconst from = (item.Depuis || item.from || '').toLowerCase();\nconst date = new Date(item[\"date interne\"] || item.date || Date.now());\n\n// Plateforme\nlet plateforme = 'Autre';\nif (from.includes('linkedin') || subject.includes('linkedin')) plateforme = 'LinkedIn';\nelse if (from.includes('indeed') || subject.includes('indeed')) plateforme = 'Indeed';\nelse if (from.includes('welcometothejungle') || from.includes('wttj')) plateforme = 'Welcome to the Jungle';\nelse if (from.includes('apec') || subject.includes('apec')) plateforme = 'Apec';\nelse if (from.includes('cadremploi')) plateforme = 'Cadremploi';\nelse if (from.includes('regionsjob')) plateforme = 'RegionsJob';\nelse if (from.includes('hellowork')) plateforme = 'Hellowork';\nelse if (from.includes('jobteaser')) plateforme = 'Jobteaser';\nelse if (from.includes('glassdoor')) plateforme = 'Glassdoor';\n\n// Entreprise - cherche 'chez X' ou 'at X' dans le subject\nlet entreprise = '';\nconst entSrc = subjectOrig;\nlet entIdx = entSrc.toLowerCase().indexOf(' chez ');\nif (entIdx === -1) entIdx = entSrc.toLowerCase().indexOf(' at ');\nif (entIdx > -1) {\n  const entStart = entIdx + (entSrc.toLowerCase().indexOf(' chez ') > -1 ? 6 : 4);\n  let entEnd = entSrc.length;\n  for (const stop of [' pour ', ' for ', ' - ', ' au ', ',']) {\n    const si = entSrc.toLowerCase().indexOf(stop, entStart);\n    if (si > -1 && si < entEnd) entEnd = si;\n  }\n  entreprise = entSrc.substring(entStart, entEnd).trim();\n}\nif (!entreprise) {\n  const bi = bodyOrig.toLowerCase().indexOf(' chez ');\n  if (bi > -1) {\n    const bs = bi + 6;\n    let be = bodyOrig.length;\n    for (const stop of [' a ', '.', ',', '!', '\\n']) {\n      const si = bodyOrig.toLowerCase().indexOf(stop, bs);\n      if (si > -1 && si - bs < 40 && si < be) be = si;\n    }\n    if (be - bs > 1) entreprise = bodyOrig.substring(bs, be).trim();\n  }\n}\n\n// Poste - cherche dans le subject\nlet poste = '';\nconst posteMarkers = ['pour le poste de ', 'pour le poste d ', 'for the position of ', 'applied for ', 'pour le poste '];\nfor (const marker of posteMarkers) {\n  const pi = subject.indexOf(marker);\n  if (pi > -1) {\n    const ps = pi + marker.length;\n    let pe = subject.length;\n    for (const stop of [' chez ', ' at ', ' - ', ' au ', ',', ' |']) {\n      const si = subject.indexOf(stop, ps);\n      if (si > -1 && si < pe) pe = si;\n    }\n    poste = subjectOrig.substring(ps, pe).trim();\n    if (poste.length > 2) break;\n  }\n}\nif (!poste) {\n  const dashIdx = subjectOrig.search(/ [-] /);\n  if (dashIdx > 3 && dashIdx < 60) {\n    const candidate = subjectOrig.substring(0, dashIdx).replace(/^(candidature|confirmation|votre candidature|application)/i, '').trim();\n    if (candidate.length > 2) poste = candidate;\n  }\n}\nif (!poste) {\n  const pi = body.indexOf('poste de ');\n  if (pi > -1) {\n    const ps = pi + 9;\n    let pe = body.length;\n    for (const stop of [' chez ', ' a ', '.', ',', '!', '\\n']) {\n      const si = body.indexOf(stop, ps);\n      if (si > -1 && si - ps < 50 && si < pe) pe = si;\n    }\n    if (pe - ps > 2) poste = bodyOrig.substring(ps, pe).trim();\n  }\n}\n\n// Ville\nlet ville = '';\nfor (const marker of [' a ', 'location: ', 'lieu: ']) {\n  const vi = body.indexOf(marker);\n  if (vi > -1) {\n    const vs = vi + marker.length;\n    let ve = body.length;\n    for (const stop of ['.', ',', '\\n', '(', ' -']) {\n      const si = body.indexOf(stop, vs);\n      if (si > -1 && si - vs < 30 && si < ve) ve = si;\n    }\n    const v = bodyOrig.substring(vs, ve).trim();\n    if (v.length > 2 && v.length < 30) { ville = v; break; }\n  }\n}\n\n// Salaire\nlet salaire = '';\nconst eurIdx = body.indexOf('€');\nif (eurIdx > 2) salaire = bodyOrig.substring(Math.max(0, eurIdx-10), eurIdx+1).trim().split(' ').filter(function(w) { return /\\d/.test(w); }).join(' ');\n\n// Type contrat\nlet typeContrat = '';\nconst full = body + ' ' + subject;\nif (full.includes(' cdi') || full.includes('cdi ') || full.includes('cdi,')) typeContrat = 'CDI';\nelse if (full.includes(' cdd') || full.includes('cdd ')) typeContrat = 'CDD';\nelse if (full.includes('alternance') || full.includes('apprentissage')) typeContrat = 'Alternance';\nelse if (full.includes('stage')) typeContrat = 'Stage';\nelse if (full.includes('freelance')) typeContrat = 'Freelance';\n\n// Lien offre\nlet lienOffre = '';\nconst jobDomains = ['linkedin.com/jobs', 'indeed.com', 'welcometothejungle.com', 'apec.fr', 'cadremploi.fr', 'regionsjob.com', 'hellowork.com', 'jobteaser.com', 'glassdoor.fr'];\nfor (const domain of jobDomains) {\n  const di = body.indexOf(domain);\n  if (di > -1) {\n    const hs = body.lastIndexOf('http', di);\n    if (hs > -1) {\n      let he = body.indexOf(' ', di);\n      if (he === -1) he = body.length;\n      lienOffre = bodyOrig.substring(hs, he).trim();\n      break;\n    }\n  }\n}\n\n// Emails contact\nconst emailPattern = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g;\nconst noReply = ['noreply', 'no-reply', 'notification', 'donotreply', 'linkedin', 'indeed', 'welcometothejungle', 'apec', 'cadremploi', 'hellowork', 'jobteaser', 'glassdoor'];\nconst allEmails = bodyOrig.match(emailPattern) || [];\nconst contactEmails = allEmails.filter(function(e) { return !noReply.some(function(d) { return e.toLowerCase().includes(d); }); });\n\n// Contacts RH\nlet rhPrenom = '', rhNom = '', rhEmail = '';\nlet autrePrenom = '', autreNom = '', autreRole = '', autreEmail = '';\nfor (const marker of ['recruteur: ', 'recruiter: ', 'contact rh: ', 'contact: ']) {\n  const ri = bodyOrig.toLowerCase().indexOf(marker);\n  if (ri > -1) {\n    const rs = ri + marker.length;\n    let re = bodyOrig.length;\n    for (const stop of ['\\n', '<', '|', '.', '(']) {\n      const si = bodyOrig.indexOf(stop, rs);\n      if (si > -1 && si < re) re = si;\n    }\n    const parts = bodyOrig.substring(rs, re).trim().split(' ');\n    if (parts.length >= 2) { rhPrenom = parts[0]; rhNom = parts.slice(1).join(' '); }\n    break;\n  }\n}\nif (contactEmails.length > 0) rhEmail = contactEmails[0];\nif (contactEmails.length > 1) autreEmail = contactEmails[1];\n\n// Dates\nconst dateFormatee = date.toLocaleDateString('fr-FR');\nconst relanceDate = new Date(date);\nrelanceDate.setDate(relanceDate.getDate() + 7);\nconst relanceFormatee = relanceDate.toLocaleDateString('fr-FR');\nconst aucunContact = !rhEmail && !rhPrenom && !autreEmail && !autrePrenom;\n\nreturn {\n  date: dateFormatee,\n  entreprise: entreprise || '— A completer',\n  poste: (poste && poste.toLowerCase() !== 'candidature' && poste.toLowerCase() !== 'confirmation' && poste.length > 3) ? poste : '— A completer',\n  plateforme: plateforme,\n  typeContrat: typeContrat || '— A completer',\n  ville: ville || '— A completer',\n  salaire: salaire || '— A completer',\n  secteur: '— A completer',\n  statut: 'Envoyee',\n  relance: relanceFormatee,\n  rhPrenom: rhPrenom || '— A completer',\n  rhNom: rhNom || '— A completer',\n  rhEmail: rhEmail || '— A completer',\n  autrePrenom: autrePrenom || '— A completer',\n  autreNom: autreNom || '— A completer',\n  autreRole: autreRole || '— A completer',\n  autreEmail: autreEmail || '— A completer',\n  lienOffre: lienOffre || '— A completer',\n  notes: '',\n  aucunContact: aucunContact\n};"
+      },
+      "id": "node_extract_data",
+      "name": "Extraire — Données candidature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "VOTRE_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Candidatures"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.date }}",
+            "Entreprise": "={{ $json.entreprise }}",
+            "Poste": "={{ $json.poste }}",
+            "Plateforme": "={{ $json.plateforme }}",
+            "Type de contrat": "={{ $json.typeContrat }}",
+            "Ville": "={{ $json.ville }}",
+            "Salaire": "={{ $json.salaire }}",
+            "Secteur": "={{ $json.secteur }}",
+            "Statut": "={{ $json.statut }}",
+            "Relance prévue": "={{ $json.relance }}",
+            "Contact RH — Prénom": "={{ $json.rhPrenom }}",
+            "Contact RH — Nom": "={{ $json.rhNom }}",
+            "Contact RH — Email": "={{ $json.rhEmail }}",
+            "Contact Autre — Prénom": "={{ $json.autrePrenom }}",
+            "Contact Autre — Nom": "={{ $json.autreNom }}",
+            "Contact Autre — Rôle": "={{ $json.autreRole }}",
+            "Contact Autre — Email": "={{ $json.autreEmail }}",
+            "Lien offre": "={{ $json.lienOffre }}",
+            "Notes": "={{ $json.notes }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "node_google_sheets",
+      "name": "Google Sheets — Ajouter ligne",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        950,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "VOTRE_TELEGRAM_CHAT_ID",
+        "text": "=✅ *Candidature enregistrée !*\n\n🏢 *Entreprise :* {{ $(\"Extraire — Données candidature\").first().json.entreprise }}\n💼 *Poste :* {{ $(\"Extraire — Données candidature\").first().json.poste }}\n🌐 *Plateforme :* {{ $(\"Extraire — Données candidature\").first().json.plateforme }}\n📅 *Date :* {{ $(\"Extraire — Données candidature\").first().json.date }}\n📍 *Ville :* {{ $(\"Extraire — Données candidature\").first().json.ville }}\n📋 *Contrat :* {{ $(\"Extraire — Données candidature\").first().json.typeContrat }}\n💰 *Salaire :* {{ $(\"Extraire — Données candidature\").first().json.salaire }}\n🔔 *Relance prévue :* {{ $(\"Extraire — Données candidature\").first().json.relance }}\n\n👤 *Contact RH :* {{ $(\"Extraire — Données candidature\").first().json.rhPrenom }} {{ $(\"Extraire — Données candidature\").first().json.rhNom }}\n📧 *Email RH :* {{ $(\"Extraire — Données candidature\").first().json.rhEmail }}\n\n👤 *Contact Autre :* {{ $(\"Extraire — Données candidature\").first().json.autrePrenom }} {{ $(\"Extraire — Données candidature\").first().json.autreNom }}\n🎯 *Rôle :* {{ $(\"Extraire — Données candidature\").first().json.autreRole }}\n📧 *Email Autre :* {{ $(\"Extraire — Données candidature\").first().json.autreEmail }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "node_telegram_confirm",
+      "name": "Telegram — Confirmation simple",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1450,
+        400
+      ],
+      "notes": "Envoyé quand au moins un contact a été trouvé",
+      "credentials": {
+        "telegramApi": {
+          "id": "votre_credential_telegram",
+          "name": "Votre Bot Telegram"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Gmail — Surveiller emails": {
+      "main": [
+        [
+          {
+            "node": "Filtrer — Plateformes emploi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrer — Plateformes emploi": {
+      "main": [
+        [
+          {
+            "node": "Extraire — Données candidature",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Extraire — Données candidature": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets — Ajouter ligne",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets — Ajouter ligne": {
+      "main": [
+        [
+          {
+            "node": "Telegram — Confirmation simple",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "candidatures",
+    "CRM",
+    "emploi"
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2026-04-02T00:00:00.000Z",
+  "versionId": "1"
+}
