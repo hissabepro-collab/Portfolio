@@ -3,194 +3,226 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Générateur CSV</title>
+<title>Générateur CSV — Hissa Berton</title>
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    padding: 2rem;
-    background: #f5f5f5;
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+--bg:#0A0A0A;
+--s1:#111;
+--s2:#191919;
+--border:#252525;
+--border2:#333;
+--text:#E5E5E5;
+--muted:#666;
+--silver:#AAA;
+--accent:#E5E5E5;
+--success:#4CAF76;
+--error:#E05A5A;
 }
 
-.container {
-    max-width: 600px;
-    margin: auto;
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+background:var(--bg);
+color:var(--text);
+font-family:'Space Grotesk',sans-serif;
+display:flex;
+justify-content:center;
+padding:60px 20px;
 }
 
-h1 {
-    margin-bottom: 1rem;
+.wrap{max-width:700px;width:100%;}
+
+.card{
+background:var(--s1);
+border:1px solid var(--border);
+padding:28px;
+border-radius:10px;
 }
 
-.options {
-    margin: 1rem 0;
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.full{grid-column:1/-1;}
+
+input,select{
+background:var(--s2);
+border:1px solid var(--border2);
+color:var(--text);
+padding:10px;
+border-radius:6px;
 }
 
-button {
-    margin-top: 1rem;
-    margin-right: 10px;
-    padding: 10px 16px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
+label{
+font-size:10px;
+color:var(--muted);
+text-transform:uppercase;
+font-family:'Space Mono';
 }
 
-#generateClassic {
-    background: black;
-    color: white;
+.checks{display:flex;gap:20px;flex-wrap:wrap;}
+
+button{
+margin-top:10px;
+padding:12px;
+border:none;
+border-radius:8px;
+font-weight:600;
+cursor:pointer;
 }
 
-#generateAI {
-    background: #10b981;
-    color: white;
-}
+.btn-main{background:white;color:black;}
+.btn-ai{background:#2a5dc8;color:white;}
 
-input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-}
+#status{margin-top:10px;font-size:12px;}
+
+table{width:100%;margin-top:20px;border-collapse:collapse;font-size:12px;}
+td,th{padding:6px;border-bottom:1px solid var(--border);}
 </style>
 </head>
 
 <body>
+<div class="wrap">
 
-<div class="container">
+<div class="card">
 
-<h1>Générateur de données CSV</h1>
+<div class="grid">
 
-<p>
-Mode rapide : génération instantanée sans IA.<br>
-Mode IA : nécessite une clé API Gemini personnelle.
-</p>
-
-<div class="options">
-<label><input type="checkbox" id="nulls"> Valeurs nulles</label><br>
-<label><input type="checkbox" id="duplicates"> Doublons</label><br>
-<label><input type="checkbox" id="english"> Headers anglais</label><br>
-
-<label>Séparateur :</label>
-<select id="separator">
-<option value=";">;</option>
-<option value=",">,</option>
-<option value="\t">Tab</option>
+<div>
+<label>Secteur</label>
+<select id="secteur">
+<option>Banque</option>
+<option>Télécom</option>
+<option>Retail</option>
 </select>
 </div>
 
-<input type="text" id="apiKey" placeholder="Clé API Gemini (optionnel)">
+<div>
+<label>Lignes</label>
+<input type="number" id="rows" value="50">
+</div>
 
-<button id="generateClassic">Générer (rapide)</button>
-<button id="generateAI">Générer avec IA</button>
+<div class="full">
+<label>Options</label>
+<div class="checks">
+<label><input type="checkbox" id="nulls" checked> Null (~3%)</label>
+<label><input type="checkbox" id="dups"> Doublons</label>
+<label><input type="checkbox" id="en" checked> EN headers</label>
+</div>
+</div>
 
+<div class="full">
+<label>Clé API (optionnelle)</label>
+<input type="text" id="apiKey" placeholder="Gemini / Anthropic">
+</div>
+
+</div>
+
+<button class="btn-main" onclick="generateLocal()">Générer sans IA</button>
+<button class="btn-ai" onclick="generateAI()">Générer avec IA</button>
+
+<div id="status"></div>
+<table id="preview"></table>
+
+</div>
 </div>
 
 <script>
 
-// ---------- DATA BASE ----------
-const names = ["Jean","Paul","Marie","Sophie","Lucas","Emma","Noah","Léa"];
-const cities = ["Paris","Lyon","Marseille","Toulouse","Nice"];
+function rand(arr){return arr[Math.floor(Math.random()*arr.length)]}
 
-// ---------- CLASSIC GENERATION ----------
-function generateCSVClassic() {
-    const sep = document.getElementById("separator").value;
-    const nulls = document.getElementById("nulls").checked;
-    const duplicates = document.getElementById("duplicates").checked;
-    const english = document.getElementById("english").checked;
+function generateLocal(){
 
-    let headers = english
-        ? ["name","age","city"]
-        : ["nom","age","ville"];
+const rows = parseInt(document.getElementById("rows").value)
+const nulls = document.getElementById("nulls").checked
+const dups = document.getElementById("dups").checked
 
-    let rows = [headers.join(sep)];
+const headers = ["client_id","age","revenu","score","churn"]
 
-    for (let i = 0; i < 100; i++) {
-        let name = names[Math.floor(Math.random() * names.length)];
-        let age = Math.floor(Math.random() * 60) + 18;
-        let city = cities[Math.floor(Math.random() * cities.length)];
+let data = []
 
-        if (nulls && Math.random() < 0.1) name = "";
-        if (nulls && Math.random() < 0.1) city = "";
+for(let i=0;i<rows;i++){
 
-        rows.push([name, age, city].join(sep));
+let row = [
+i+1,
+Math.floor(Math.random()*60)+18,
+Math.floor(Math.random()*5000),
+Math.random().toFixed(2),
+Math.random()>0.7?1:0
+]
 
-        if (duplicates && Math.random() < 0.1) {
-            rows.push([name, age, city].join(sep));
-        }
-    }
-
-    downloadCSV(rows.join("\n"));
+if(nulls && Math.random()<0.03){
+row[Math.floor(Math.random()*row.length)] = ""
 }
 
-// ---------- AI GENERATION ----------
-async function generateCSVWithAI(apiKey) {
-    const sep = document.getElementById("separator").value;
+data.push(row)
 
-    const prompt = `
-Generate a realistic CSV dataset of 50 customers.
-Include:
-- missing values
-- duplicates
-Use "${sep}" as separator.
-Return ONLY raw CSV.
-`;
-
-    try {
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: prompt }]
-                    }]
-                })
-            }
-        );
-
-        const data = await response.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-        if (!text) {
-            alert("Erreur IA");
-            return;
-        }
-
-        downloadCSV(text);
-
-    } catch (e) {
-        alert("Erreur API");
-    }
+if(dups && Math.random()<0.01){
+data.push(row)
+}
 }
 
-// ---------- DOWNLOAD ----------
-function downloadCSV(content) {
-    const blob = new Blob([content], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
+render(headers,data)
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "data.csv";
-    a.click();
-
-    URL.revokeObjectURL(url);
 }
 
-// ---------- EVENTS ----------
-document.getElementById("generateClassic").addEventListener("click", generateCSVClassic);
+async function generateAI(){
 
-document.getElementById("generateAI").addEventListener("click", () => {
-    const key = document.getElementById("apiKey").value;
+const key = document.getElementById("apiKey").value
 
-    if (!key) {
-        alert("Ajoute une clé API pour utiliser l’IA");
-        return;
-    }
+if(!key){
+document.getElementById("status").innerText="clé API requise"
+return
+}
 
-    generateCSVWithAI(key);
-});
+document.getElementById("status").innerText="appel IA..."
+
+try{
+
+const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key="+key,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+contents:[{
+parts:[{text:"Generate 50 rows CSV realistic banking dataset. Only CSV."}]
+}]
+})
+})
+
+const data = await res.json()
+
+const text = data.candidates[0].content.parts[0].text
+
+parseCSV(text)
+
+}catch(e){
+document.getElementById("status").innerText="erreur IA"
+}
+
+}
+
+function parseCSV(text){
+
+const lines = text.split("\n").filter(l=>l.trim())
+
+const headers = lines[0].split(",")
+const rows = lines.slice(1).map(l=>l.split(","))
+
+render(headers,rows)
+
+}
+
+function render(headers,rows){
+
+let html = "<tr>"+headers.map(h=>"<th>"+h+"</th>").join("")+"</tr>"
+
+rows.slice(0,15).forEach(r=>{
+html+="<tr>"+r.map(c=>"<td>"+(c||"-")+"</td>").join("")+"</tr>"
+})
+
+document.getElementById("preview").innerHTML=html
+
+}
 
 </script>
 
