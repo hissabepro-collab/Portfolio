@@ -24,12 +24,16 @@ Portfolio/
 
 | Projet | Outils | Type |
 |---|---|---|
-| Modèle prédictif d'attrition client | Python, Random Forest | Machine Learning |
-| Fiabilisation dataset & attrition télécom | Python, Pandas | Data Preparation |
-| Analyse sémantique campagne d'influence | Python, BERTopic, NLP | Text Mining |
-| Régression logistique — Risque cardiaque | R, GLM | Statistiques |
-| Dashboard pilotage commercial | Dataviv, CRM | Visualisation |
-| Automatisation reporting segmenté | SAS, Macros | Automatisation |
+| Modèle prédictif d'attrition client | Python, Pandas, Scikit-learn, Random Forest, EDA | Machine Learning |
+| Fiabilisation dataset & attrition télécom | Python, Pandas, Feature Engineering, Random Forest | Data Preparation |
+| Analyse sémantique campagne d'influence | Python, BERTopic, NLP, YouTube API, Sentiment Analysis | Text Mining |
+| Régression logistique — Risque cardiaque | R, GLM, Odds Ratio, ggplot2 | Statistiques |
+| Dashboard pilotage commercial | Dataviv, CRM, DataViz, NPS | Visualisation |
+| Automatisation reporting segmenté | SAS EG, Macro SAS, PROC SQL, PROC SGPLOT | Automatisation |
+| Mémoire Master 1 | Recherche qualitative, Marketing, Entretiens | Recherche |
+| Automatisation workflows N8N | N8N, API, No-code, Workflow | Automatisation |
+| Générateur de données CSV fictives | Python, CSV, Data | Automatisation |
+| CV - Hissa Berton | Data Analyst, Alternance | Curriculum Vitae |
 
 ## Site en ligne
 
