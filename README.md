@@ -1,6 +1,6 @@
 # Portfolio Data Analyst — Hissa Berton
 
-Bienvenue sur mon portfolio de projets data. Je suis Analyst CRM en alternance au Crédit Agricole du Languedoc, et je développe descompétences en analyses statistiques, automatisations et visualisations de données.
+Bienvenue sur mon portfolio de projets data. Je suis Analyst CRM en alternance au Crédit Agricole du Languedoc, et je développe des compétences en analyses de données métier, statistiques, automatisations et visualisations de données.
 
 ## Compétences
 
@@ -13,9 +13,11 @@ Bienvenue sur mon portfolio de projets data. Je suis Analyst CRM en alternance a
 ## Structure du repo
 ```
 Portfolio/
-├── index.html          → Site portfolio
-├── pdf/                → Rapports et livrables PDF
-└── projets/            → Notebooks et scripts
+├── index.html                     → Site portfolio
+├── README                         → Présentation du git
+  ├── pdf/                         → Rapports et livrables PDF et démo
+  └── projets/                     → Notebooks et scripts
+     └── suivi candidatures n8n    → Script n8n
 ```
 
 ## Projets
