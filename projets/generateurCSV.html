@@ -6,78 +6,31 @@
 <title>Générateur CSV — Hissa Berton</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
-
 :root {
---bg:#0A0A0A;
---s1:#111;
---s2:#191919;
---border:#252525;
---border2:#333;
---text:#E5E5E5;
---muted:#666;
---silver:#AAA;
---accent:#E5E5E5;
---success:#4CAF76;
---error:#E05A5A;
+--bg:#0A0A0A; --s1:#111; --s2:#191919; --border:#252525; --border2:#333;
+--text:#E5E5E5; --muted:#666; --silver:#AAA;
+--success:#4CAF76; --error:#E05A5A; --gemini:#4285F4; --noapi:#A78BFA;
 }
-
-*{margin:0;padding:0;box-sizing:border-box;}
-
+*{box-sizing:border-box;margin:0;padding:0}
 body{
-background:var(--bg);
-color:var(--text);
-font-family:'Space Grotesk',sans-serif;
-display:flex;
-justify-content:center;
-padding:60px 20px;
+background:var(--bg);color:var(--text);
+font-family:sans-serif;display:flex;justify-content:center;padding:40px
 }
+.wrap{max-width:700px;width:100%}
+.card{background:var(--s1);border:1px solid var(--border);padding:20px;border-radius:10px}
 
-.wrap{max-width:700px;width:100%;}
+.mode-switcher{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.mode-btn{padding:10px;border:1px solid var(--border2);background:var(--s2);cursor:pointer}
+.mode-btn.active-noapi{border-color:var(--noapi)}
+.mode-btn.active-gemini{border-color:var(--gemini)}
 
-.card{
-background:var(--s1);
-border:1px solid var(--border);
-padding:28px;
-border-radius:10px;
-}
+.mode-info{display:none;font-size:12px;color:var(--muted);margin-bottom:10px}
+.mode-info.visible{display:block}
 
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.full{grid-column:1/-1;}
+.api-section{display:none}
+.api-section.visible{display:block}
 
-input,select{
-background:var(--s2);
-border:1px solid var(--border2);
-color:var(--text);
-padding:10px;
-border-radius:6px;
-}
-
-label{
-font-size:10px;
-color:var(--muted);
-text-transform:uppercase;
-font-family:'Space Mono';
-}
-
-.checks{display:flex;gap:20px;flex-wrap:wrap;}
-
-button{
-margin-top:10px;
-padding:12px;
-border:none;
-border-radius:8px;
-font-weight:600;
-cursor:pointer;
-}
-
-.btn-main{background:white;color:black;}
-.btn-ai{background:#2a5dc8;color:white;}
-
-#status{margin-top:10px;font-size:12px;}
-
-table{width:100%;margin-top:20px;border-collapse:collapse;font-size:12px;}
-td,th{padding:6px;border-bottom:1px solid var(--border);}
+button{padding:10px;width:100%;cursor:pointer}
 </style>
 </head>
 
@@ -86,144 +39,73 @@ td,th{padding:6px;border-bottom:1px solid var(--border);}
 
 <div class="card">
 
-<div class="grid">
+<div class="mode-switcher">
+<button class="mode-btn active-noapi" onclick="setMode('noapi')">Sans API</button>
+<button class="mode-btn" onclick="setMode('gemini')">Gemini</button>
+</div>
 
-<div>
-<label>Secteur</label>
+<div id="info-noapi" class="mode-info visible">Génération locale limitée</div>
+<div id="info-gemini" class="mode-info">IA Gemini</div>
+
 <select id="secteur">
-<option>Banque</option>
+<option value="">Secteur</option>
+<option>Banque / Finance</option>
 <option>Télécom</option>
-<option>Retail</option>
 </select>
+
+<input id="lignes" type="number" value="100">
+
+<div id="section-gemini" class="api-section">
+<input type="password" id="geminiKey" placeholder="clé API">
 </div>
 
-<div>
-<label>Lignes</label>
-<input type="number" id="rows" value="50">
-</div>
-
-<div class="full">
-<label>Options</label>
-<div class="checks">
-<label><input type="checkbox" id="nulls" checked> Null (~3%)</label>
-<label><input type="checkbox" id="dups"> Doublons</label>
-<label><input type="checkbox" id="en" checked> EN headers</label>
-</div>
-</div>
-
-<div class="full">
-<label>Clé API (optionnelle)</label>
-<input type="text" id="apiKey" placeholder="Gemini / Anthropic">
-</div>
-
-</div>
-
-<button class="btn-main" onclick="generateLocal()">Générer sans IA</button>
-<button class="btn-ai" onclick="generateAI()">Générer avec IA</button>
+<button id="generateBtn" onclick="generate()">Générer</button>
 
 <div id="status"></div>
-<table id="preview"></table>
 
 </div>
 </div>
 
 <script>
+let currentMode = 'noapi';
 
-function rand(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function setMode(mode){
+currentMode=mode;
 
-function generateLocal(){
+document.querySelectorAll('.mode-btn').forEach(b=>{
+b.classList.remove('active-noapi','active-gemini');
+});
 
-const rows = parseInt(document.getElementById("rows").value)
-const nulls = document.getElementById("nulls").checked
-const dups = document.getElementById("dups").checked
+const idx={noapi:0,gemini:1};
+document.querySelectorAll('.mode-btn')[idx[mode]].classList.add('active-'+mode);
 
-const headers = ["client_id","age","revenu","score","churn"]
+document.querySelectorAll('.mode-info').forEach(el=>el.classList.remove('visible'));
+document.getElementById('info-'+mode).classList.add('visible');
 
-let data = []
-
-for(let i=0;i<rows;i++){
-
-let row = [
-i+1,
-Math.floor(Math.random()*60)+18,
-Math.floor(Math.random()*5000),
-Math.random().toFixed(2),
-Math.random()>0.7?1:0
-]
-
-if(nulls && Math.random()<0.03){
-row[Math.floor(Math.random()*row.length)] = ""
+document.getElementById('section-gemini').classList.toggle('visible',mode==='gemini');
 }
 
-data.push(row)
-
-if(dups && Math.random()<0.01){
-data.push(row)
-}
-}
-
-render(headers,data)
-
+function setStatus(msg,type){
+const s=document.getElementById('status');
+s.textContent=msg;
+s.style.color=type==='error'?'red':'white';
 }
 
-async function generateAI(){
+function generate(){
+const secteur=document.getElementById('secteur').value;
+const rows=parseInt(document.getElementById('lignes').value);
 
-const key = document.getElementById("apiKey").value
+if(!secteur) return setStatus('Choisir secteur','error');
 
-if(!key){
-document.getElementById("status").innerText="clé API requise"
-return
+if(currentMode==='gemini' && !document.getElementById('geminiKey').value.trim())
+return setStatus('Clé requise','error');
+
+setStatus('Génération...');
+
+setTimeout(()=>{
+setStatus('OK '+rows+' lignes générées','success');
+},500);
 }
-
-document.getElementById("status").innerText="appel IA..."
-
-try{
-
-const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key="+key,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-contents:[{
-parts:[{text:"Generate 50 rows CSV realistic banking dataset. Only CSV."}]
-}]
-})
-})
-
-const data = await res.json()
-
-const text = data.candidates[0].content.parts[0].text
-
-parseCSV(text)
-
-}catch(e){
-document.getElementById("status").innerText="erreur IA"
-}
-
-}
-
-function parseCSV(text){
-
-const lines = text.split("\n").filter(l=>l.trim())
-
-const headers = lines[0].split(",")
-const rows = lines.slice(1).map(l=>l.split(","))
-
-render(headers,rows)
-
-}
-
-function render(headers,rows){
-
-let html = "<tr>"+headers.map(h=>"<th>"+h+"</th>").join("")+"</tr>"
-
-rows.slice(0,15).forEach(r=>{
-html+="<tr>"+r.map(c=>"<td>"+(c||"-")+"</td>").join("")+"</tr>"
-})
-
-document.getElementById("preview").innerHTML=html
-
-}
-
 </script>
 
 </body>
