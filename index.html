@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hissa Berton — Data Analyst</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --ink: #0f0f0f;
+            --paper: #f5f0e8;
+            --cream: #ede8dc;
+            --accent: #c8522a;
+            --accent2: #2a5dc8;
+            --muted: #7a7060;
+            --border: rgba(15,15,15,0.12);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); overflow-x: hidden; }
+
+        /* NAV */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.2rem 4rem;
+            background: rgba(245,240,232,.95); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-logo { font-family: 'DM Serif Display', serif; font-size: 1.25rem; letter-spacing: -.02em; color: var(--ink); text-decoration: none; }
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-links a { text-decoration: none; color: var(--muted); font-size: .875rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; transition: color .2s; }
+        .nav-links a:hover { color: var(--ink); }
+
+        /* SECTION TITLE */
+        .section-title { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 3.5rem; }
+        .section-title .num { font-size: .72rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); flex-shrink: 0; }
+        .section-title h2 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 3vw, 2.8rem); letter-spacing: -.025em; line-height: 1; color: var(--ink); }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .section-title.light h2 { color: var(--paper); }
+        .section-title.light::after { background: rgba(245,240,232,.15); }
+
+        /* HERO */
+        .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; padding: 0 4rem; padding-top: 80px; position: relative; overflow: hidden; }
+        .hero-left { display: flex; flex-direction: column; justify-content: center; padding: 4rem 4rem 4rem 0; }
+        .hero-eyebrow { font-size: .8rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; display: flex; align-items: center; gap: .75rem; }
+        .hero-eyebrow::before { content: ''; width: 2rem; height: 1px; background: var(--accent); }
+        .hero-title { font-family: 'DM Serif Display', serif; font-size: clamp(2.8rem, 5vw, 4.5rem); line-height: 1.05; letter-spacing: -.03em; margin-bottom: 1.5rem; }
+        .hero-title em { font-style: italic; color: var(--accent); }
+        .hero-desc { font-size: 1.05rem; color: var(--muted); line-height: 1.75; max-width: 420px; margin-bottom: 3rem; }
+        .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .btn-primary { padding: .85rem 2rem; background: var(--ink); color: var(--paper); border: 1.5px solid var(--ink); border-radius: 3px; text-decoration: none; font-size: .875rem; font-weight: 600; letter-spacing: .04em; transition: all .2s; }
+        .btn-primary:hover { background: var(--accent); border-color: var(--accent); }
+        .btn-outline { padding: .85rem 2rem; background: transparent; color: var(--ink); border: 1.5px solid var(--ink); border-radius: 3px; text-decoration: none; font-size: .875rem; font-weight: 600; letter-spacing: .04em; transition: all .2s; }
+        .btn-outline:hover { background: var(--ink); color: var(--paper); }
+        .hero-right { position: relative; display: flex; align-items: center; justify-content: center; border-left: 1px solid var(--border); }
+        .hero-photo-frame { width: 340px; height: 420px; position: relative; }
+        .hero-photo-frame::before { content: ''; position: absolute; top: 16px; left: 16px; right: -16px; bottom: -16px; border: 1.5px solid var(--accent); border-radius: 4px; z-index: 0; }
+        .photo-placeholder { width: 100%; height: 100%; background: var(--cream); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: var(--muted); border: 1.5px solid var(--border); position: relative; z-index: 1; }
+        .photo-placeholder i { font-size: 3rem; opacity: .3; }
+        .photo-placeholder span { font-size: .8rem; text-align: center; max-width: 160px; line-height: 1.5; opacity: .6; }
+        .hero-photo-frame img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; position: relative; z-index: 1; }
+        .marquee-strip { position: absolute; bottom: 0; left: 0; right: 0; overflow: hidden; height: 36px; border-top: 1px solid var(--border); background: var(--cream); display: flex; align-items: center; }
+        .marquee-track { display: flex; white-space: nowrap; animation: marquee 20s linear infinite; }
+        .marquee-item { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 0 2rem; display: flex; align-items: center; gap: 1rem; }
+        .marquee-item::after { content: '·'; }
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+        /* ABOUT */
+        .about { padding: 8rem 4rem; border-top: 1px solid var(--border); }
+        .about-heading { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 3.5vw, 3rem); line-height: 1.1; margin-bottom: 2rem; letter-spacing: -.025em; }
+        .about-heading em { font-style: italic; color: var(--accent); }
+        .about-text { font-size: 1.05rem; color: var(--muted); line-height: 1.85; max-width: 700px; margin-bottom: 3.5rem; }
+        .skills-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+        .skill-card { background: white; padding: 1.75rem 1.5rem; transition: background .2s; }
+        .skill-card:hover { background: var(--cream); }
+        .skill-card i { font-size: 1.5rem; color: var(--accent2); margin-bottom: 1rem; display: block; }
+        .skill-card h4 { font-size: .95rem; font-weight: 600; margin-bottom: .5rem; color: var(--ink); }
+        .skill-card p { font-size: .82rem; color: var(--muted); line-height: 1.6; }
+
+        /* TOOLS */
+        .tools-band { background: var(--ink); color: var(--paper); padding: 3rem 4rem; display: flex; align-items: center; gap: 5rem; }
+        .tools-band-title { font-family: 'DM Serif Display', serif; font-size: 1.3rem; white-space: nowrap; opacity: .5; }
+        .tools-list { display: flex; flex-wrap: wrap; gap: 1rem; list-style: none; }
+        .tool-pill { padding: .45rem 1.1rem; border: 1px solid rgba(245,240,232,.2); border-radius: 100px; font-size: .8rem; font-weight: 500; letter-spacing: .05em; color: var(--paper); opacity: .85; transition: all .2s; }
+        .tool-pill:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
+
+        /* PROJECTS */
+        .projects { padding: 8rem 4rem; border-top: 1px solid var(--border); }
+        .projects-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 2rem; }
+        .projects-sub { color: var(--muted); font-size: .95rem; margin-top: .25rem; }
+        .filters { display: flex; gap: .5rem; flex-wrap: wrap; align-self: flex-end; }
+        .filter-btn { padding: .5rem 1.2rem; border: 1px solid var(--border); background: transparent; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: .8rem; font-weight: 500; letter-spacing: .05em; color: var(--muted); cursor: pointer; transition: all .2s; }
+        .filter-btn.active, .filter-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+        .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+        .project-card { background: white; padding: 2.5rem; transition: background .2s; display: flex; flex-direction: column; }
+        .project-card:hover { background: var(--cream); }
+        .project-cat { font-size: .7rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.25rem; }
+        .project-title { font-family: 'DM Serif Display', serif; font-size: 1.25rem; line-height: 1.25; margin-bottom: 1rem; color: var(--ink); }
+        .project-desc { font-size: .875rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; flex: 1; }
+        .project-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.75rem; }
+        .project-tag { font-size: .72rem; padding: .3rem .7rem; background: var(--cream); color: var(--muted); border-radius: 3px; font-weight: 500; }
+        .project-links { display: flex; gap: .75rem; flex-wrap: wrap; }
+        .project-link { font-size: .78rem; font-weight: 600; letter-spacing: .05em; padding: .5rem 1rem; border-radius: 3px; text-decoration: none; display: inline-flex; align-items: center; gap: .4rem; transition: all .2s; border: 1px solid var(--border); }
+        .project-link.code { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+        .project-link.code:hover { background: var(--accent2); border-color: var(--accent2); }
+        .project-link.demo { background: var(--accent); color: white; border-color: var(--accent); }
+		.project-link.demo-live {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.project-link.demo-live:hover {
+    background: #059669;
+}
+        .project-link.demo:hover { opacity: .85; }
+	.project-link.demo-sphinx { background: #6b2d8b; border-color: #6b2d8b; }
+	.project-link.demo-sphinx:hover { background: #55226e; border-color: #55226e; opacity: 1; }
+
+        /* CONTACT */
+        .contact { padding: 8rem 4rem; background: var(--ink); color: var(--paper); display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; }
+        .contact-heading { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -.025em; }
+        .contact-heading em { font-style: italic; color: var(--accent); }
+        .contact-text { color: rgba(245,240,232,.55); font-size: 1rem; line-height: 1.8; max-width: 400px; }
+        .contact-right { display: flex; flex-direction: column; gap: 1.5rem; }
+        .contact-item { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem 2rem; border: 1px solid rgba(245,240,232,.1); border-radius: 4px; transition: border-color .2s; }
+        .contact-item:hover { border-color: var(--accent); }
+        .contact-item i { font-size: 1.4rem; color: var(--accent); width: 2rem; text-align: center; }
+        .contact-item h4 { font-size: .75rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(245,240,232,.4); margin-bottom: .3rem; }
+        .contact-item a { color: var(--paper); text-decoration: none; font-size: .9rem; transition: color .2s; }
+        .contact-item a:hover { color: var(--accent); }
+
+        /* FOOTER */
+        footer { background: #080808; color: rgba(245,240,232,.3); text-align: center; padding: 1.5rem; font-size: .78rem; letter-spacing: .05em; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            nav { padding: 1rem 2rem; }
+            .hero { grid-template-columns: 1fr; padding: 6rem 2rem 4rem; }
+            .hero-right { display: none; }
+            .about { padding: 5rem 2rem; }
+            .skills-row { grid-template-columns: repeat(2, 1fr); }
+            .tools-band { padding: 2rem; flex-direction: column; gap: 1.5rem; }
+            .projects { padding: 5rem 2rem; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .contact { grid-template-columns: 1fr; padding: 5rem 2rem; gap: 3rem; }
+        }
+        @media (max-width: 640px) {
+            .skills-row { grid-template-columns: 1fr; }
+            .projects-header { flex-direction: column; }
+            .section-title::after { display: none; }
+        }
+        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+        .hamburger span { width: 24px; height: 1.5px; background: var(--ink); transition: .3s; }
+        @media (max-width: 768px) {
+            .hamburger { display: flex; }
+            .nav-links { position: fixed; top: 60px; left: 0; right: 0; background: var(--paper); flex-direction: column; align-items: center; padding: 2rem; gap: 1.5rem; border-bottom: 1px solid var(--border); transform: translateY(-110%); transition: transform .3s; z-index: 99; }
+            .nav-links.open { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<nav id="navbar">
+    <a class="nav-logo" href="#">Hissa Berton</a>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#about">À propos</a></li>
+        <li><a href="#projects">Projets</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-left">
+        <p class="hero-eyebrow">Marketing & Data Analytics · Data / Business Analyst</p>
+        <h1 class="hero-title">Transformer<br>les données en<br><em>décisions.</em></h1>
+        <p class="hero-desc">Analyse client, pilotage CRM et marketing data-driven, du traitement brut à l'action stratégique, à Montpellier et au-delà.</p>
+        <div class="hero-cta">
+            <a href="#projects" class="btn-primary">Voir mes projets</a>
+            <a href="#contact" class="btn-outline">Me contacter</a>
+        </div>
+    </div>
+    <div class="hero-right">
+        <div class="hero-photo-frame">
+            <div class="photo-placeholder">
+                <i class="fas fa-user"></i>
+                <span>Remplace par ta photo professionnelle</span>
+            </div>
+        </div>
+    </div>
+    <div class="marquee-strip">
+        <div class="marquee-track" id="marquee"></div>
+    </div>
+</section>
+
+<section class="about" id="about">
+    <div class="section-title">
+        <span class="num">01</span>
+        <h2>À propos</h2>
+    </div>
+    <h3 class="about-heading">Analytique,<br><em>rigoureux</em>,<br>orienté résultats.</h3>
+    <p class="about-text">Actuellement Data Analyst CRM en alternance au Crédit Agricole du Languedoc, je suis un profil hybride à l'intersection du marketing et de la data. De la segmentation client à l'automatisation analytique, je transforme les données en décisions concrètes pour les équipes métier. Mon objectif : évoluer vers des rôles à fort impact, Business Analyst, CRM Manager ou Chef de Projet Data et à terme piloter une équipe.</p>
+    <div class="skills-row">
+        <div class="skill-card"><i class="fas fa-database"></i><h4>Analyse & Segmentation</h4><p>Traitement statistique, joins multi-sources, segmentation client avancée.</p></div>
+        <div class="skill-card"><i class="fas fa-cogs"></i><h4>Automatisation</h4><p>Macros SAS, pipelines reproductibles, industrialisation d'analyses/ciblages récurrentes.</p></div>
+        <div class="skill-card"><i class="fas fa-chart-bar"></i><h4>Visualisation</h4><p>Graphiques conditionnels, tableaux de bord Power BI, outputs Excel dynamiques.</p></div>
+        <div class="skill-card"><i class="fas fa-code"></i><h4>Développement</h4><p>SAS, SQL, Python, R — du prototypage à la mise en production.</p></div>
+    </div>
+</section>
+
+<div class="tools-band">
+    <p class="tools-band-title">Outils & technologies</p>
+    <ul class="tools-list">
+        <li class="tool-pill">SAS Entreprise Guide</li>
+        <li class="tool-pill">MicroStrategy</li>
+        <li class="tool-pill">SQL</li>
+        <li class="tool-pill">Python</li>
+        <li class="tool-pill">R</li>
+        <li class="tool-pill">Power BI</li>
+        <li class="tool-pill">Power Query</li>
+        <li class="tool-pill">Excel</li>
+        <li class="tool-pill">N8N</li>
+        <li class="tool-pill">Pack Office</li>
+    </ul>
+</div>
+
+<section class="projects" id="projects">
+    <div class="projects-header">
+        <div>
+            <div class="section-title">
+                <span class="num">02</span>
+                <h2>Mes projets</h2>
+            </div>
+            <p class="projects-sub">CRM, Marketing Analytics, Data & Business Analysis</p>
+        </div>
+        <div class="filters" id="filters">
+            <button class="filter-btn active" data-filter="all">Tous</button>
+            <button class="filter-btn" data-filter="analyse">Analyse</button>
+            <button class="filter-btn" data-filter="auto">Automatisation</button>
+            <button class="filter-btn" data-filter="viz">Visualisation</button>
+	    <button class="filter-btn" data-filter="recherche">Recherche</button>
+        </div>
+    </div>
+    <div class="projects-grid" id="projects-grid"></div>
+</section>
+
+<section class="contact" id="contact">
+    <div>
+        <div class="section-title light">
+            <span class="num">03</span>
+            <h2>Contact</h2>
+        </div>
+        <h3 class="contact-heading">Travaillons<br><em>ensemble.</em></h3>
+        <p class="contact-text">Disponible pour des missions en Data/Business Analyst, Marketing/CRM ou gestion de projet, ouvert aux échanges, aux opportunités et aux collaborations.</p>
+    </div>
+    <div class="contact-right">
+        <div class="contact-item">
+            <i class="fas fa-envelope"></i>
+<div><h4>Email</h4><a href="mailto:hissabe.pro@gmail.com">hissabe.pro@gmail.com</a></div></div>
+        <div class="contact-item">
+            <i class="fab fa-linkedin"></i>
+            <div><h4>LinkedIn</h4><a href="https://www.linkedin.com/public-profile/settings?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_self_edit_contact-info%3Bod6hRXs%2BSGS2sf5OkrZk0g%3D%3D" target="_blank">linkedin.com/in/hissa-berton</a></div>
+        </div>
+        <div class="contact-item">
+            <i class="fab fa-github"></i>
+            <div><h4>GitHub</h4><a href="https://github.com/hissabepro-collab/Portfolio" target="_blank">github.com/hissaberton</a></div>
+        </div>
+    </div>
+</section>
+
+<footer>&copy; 2025 Hissa Berton -- Marketing & Data Analyst &nbsp;·&nbsp; Tous droits réservés</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// MARQUEE
+const items = ['SAS Enterprise Guide','Analyse segmentée','SQL','Power BI','Python','Automatisation','Macros SAS','Visualisation','R','Pipelines analytiques'];
+const track = document.getElementById('marquee');
+[...items, ...items].forEach(t => {
+    const el = document.createElement('span');
+    el.className = 'marquee-item';
+    el.textContent = t;
+    track.appendChild(el);
+});
+
+// PROJECTS DATA
+const projects = [
+    {
+        id: 1,
+        title: "Modèle prédictif de l'attrition client",
+        cat: "analyse",
+        catLabel: "Machine Learning",
+        desc: "Un client bancaire sur cinq part sans signe avant-coureur. À partir d'un dataset de transactions réelles, j'ai construit un modèle capable d'identifier les profils à risque avant qu'il ne soit trop tard — avec 90% de précision. Chaque variable explicative traduit un levier de rétention concret, restituable directement aux équipes métier",
+        tags: ["Python", "Pandas", "Scikit-learn", "Random Forest", "EDA"],
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Mod%C3%A8le_pr%C3%A9dictif_d'attrition_client.ipynb",
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Modele_predictif_attrition_client.pdf"
+    },
+    {
+        id: 2,
+        title: "Fiabilisation d'un dataset client et prediction de l'attrition telecom",
+        cat: "analyse",
+        catLabel: "Data Preparation",
+        desc: "Un bon modèle commence par des données propres. Sur un dataset télécom de 40 000+ clients, j'ai corrigé chaque anomalie avec une logique métier documentée : anciennetés négatives, charges incohérentes, catégories en doublon. Zéro perte de données critique — un dataset fiable, prêt à alimenter un modèle prédictif en production.",
+        tags: ["Python", "Pandas", "Nettoyage", "Feature Engineering", "Random Forest"],
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Fiabilisation%20d'un%20dataset%20client%20et%20pr%C3%A9diction%20de%20l'attrition%20t%C3%A9l%C3%A9com.ipynb",
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Fiabilisation%20nettoyage%20d'un%20dataset%20client%20et%20pr%C3%A9diction%20de%20l'attrition%20telecom.pdf"
+    },
+    {
+        id: 3,
+        title: "Analyse sémantique d'une campagne d'influence Crédit Agricole du Languedoc",
+        cat: "analyse",
+        catLabel: "NLP / Text Mining",
+        desc: "La vidéo a fait 220 000 vues. Mais est-ce que ça a vraiment marché ? Sur une campagne sponsorisée par le Crédit Agricole du Languedoc, j'ai analysé 175 commentaires YouTube pour cartographier les thèmes, les sentiments et l'engagement réel de la cible. Résultat : une lecture data-driven de l'impact d'une campagne micro-influence, là où le ressenti ne suffit plus",
+        tags: ["Python", "BERTopic", "NLP", "YouTube API", "Sentiment Analysis"],
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Analyse_s%C3%A9mantique_d'une_campagne_d'influence.ipynb",
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Analyse%20s%C3%A9mantique%20d'une%20campagne%20d'influence%20Cr%C3%A9dit%20Agricole%20du%20Languedoc.pdf"
+    },
+    {
+        id: 4,
+        title: "Régression logistique — Facteurs de risque cardiaque",
+        cat: "analyse",
+        catLabel: "Statistiques / R",
+        desc: "Quels facteurs prédisent vraiment une maladie cardiaque ? Sur un dataset de 303 patients, j'ai modélisé le risque cardiaque sous R et mis en évidence que les hommes ont près de 4 fois plus de risques que les femmes. Des résultats statistiquement solides, restitués sous forme de tableau clinique et Forest Plot — directement lisibles par un profil non technique.",
+        tags: ["R", "GLM", "Odds Ratio", "Regression logistique", "ggplot2"],
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/R%C3%A9gression%20logistique%20%E2%80%94%20Facteurs%20de%20risque%20cardiaque.R",
+        demo:"https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Regression_logistique_cardiaque.pdf"
+    },
+    {
+        id: 5,
+        title: "Dashboard de pilotage commercial — Corumis Solutions",
+        cat: "viz",
+        catLabel: "Data Visualisation",
+        desc: "Piloter une force commerciale sans données fiables, c'est naviguer à l'aveugle. Dashboard multi-vues conçu pour Corumis Solutions : CA réel vs prévu, satisfaction client, performance par commercial et analyse des verbatims. Du stratégique au terrain — chaque décision appuyée par la donnée, en temps réel. Réalisé en équipe de 3 sous Dataviv by Sphinx.",
+        tags: ["DataViz", "Dashboard", "NPS", "Storytelling", "CRM"],
+        github: "https://d.dataviv.net/r/kvWxtYJylS",
+		demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Dashboard%20de%20pilotage%20commercial%20%E2%80%94%20Corumis%20Solutions.pdf"
+	
+
+    },
+    {
+        id: 6,
+	    title: "Analyse de la pression relationnelle client & automatisation du reporting — Crédit Agricole du Languedoc",
+        cat: "auto",
+        catLabel: "Automatisation SAS",
+        desc: "8 dimensions d'analyse , 6 segments, + de 100 000 clients par segment  — sans répéter une ligne de code. J'ai conçu une macro SAS paramétrée qui génère automatiquement le profiling complet d'un segment client : âge, revenus, CSP, équipement bancaire et graphiques. Un seul appel suffit. Industrialisé et déployé en production au Crédit Agricole du Languedoc.",
+        tags: ["SAS EG", "Macro SAS", "PROC SQL", "PROC SGPLOT"],
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Projet%20segmentation%20automatique%20des%20clients.sas",
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Segmentation_client_CRM.pdf"
+    },
+    {
+        id: 7,
+        title: "Mémoire Master 1",
+        cat: "recherche",
+        catLabel: "Recherche scientifique",
+        desc: "18,8 milliards de dollars dépensés en 2023 pour des objets virtuels sans valeur fonctionnelle. Pourquoi les joueurs achètent-ils ? À travers 12 entretiens et une analyse qualitative rigoureuse, j'ai identifié les mécanismes identitaires et sociaux derrière ces achats — et proposé une nouvelle lecture du rapport entre consommation numérique et construction du soi. Master 1 Marketing & Data Analytics, Université de Montpellier 2024-2025.",
+        tags: ["Recherche qualitative", "Marketing", "Jeux vidéo", "Identité numérique", "Entretiens"],
+        github: null,
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Me%CC%81moire%20BERTON%20Hissa.pdf"
+    }
+,{
+        id: 8,
+        title: "Automatisation de workflows — N8N",
+        cat: "auto",
+        catLabel: "Automatisation",
+        desc: "Des tâches manuelles récurrentes, c'est du temps analytique gaspillé. Conception et déploiement de workflows automatisés avec N8N : connexion d'APIs, traitements conditionnels et pipelines de données sans développement back-end. Des processus qui tournent seuls, fiables et documentés — pour se concentrer sur ce qui a vraiment de la valeur.",
+        tags: ["N8N", "Automatisation", "API", "Workflow", "No-code"],
+        github: null,
+		demo: null
+    },
+    {
+        id: 9,
+        title: "Générateur de données CSV fictives",
+        cat: "auto",
+        catLabel: "Automatisation",
+        desc: "Pas de données réelles disponibles ? Ce n'est plus un frein. Outil de génération de datasets fictifs cohérents et paramétrables selon le secteur, les variables et la logique métier souhaitée. Conçu pour simuler des conditions réelles et permettre de démarrer une analyse ou entraîner un modèle sans attendre. Version intelligente assistée par IA disponible en ligne.",
+        tags: ["Python", "CSV", "Data", "Generateur"],
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/G%C3%A9n%C3%A9rateur%20de%20CSV%20fictif",
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Generateur%20de%20donnees%20CSV%20fictives.pdf",
+		live: "https://hissabepro-collab.github.io/Portfolio/projets/generateurCSV.html"
+    },
+{
+        id: 10,
+        title: "CV - Hissa Berton",
+        cat: "recherche",
+        catLabel: "Curriculum Vitae",
+        desc: "Vous souhaitez en savoir plus sur mon parcours, mes expériences et mes compétences ? Mon CV est disponible via le lien.",
+        tags: ["Data Analyst", "Alternance", "Master"],
+        github: null,
+    	demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/CV%20Hissa%20Berton.pdf"
+
+    }
+];
+
+function renderProjects(filter) {
+    const grid = document.getElementById('projects-grid');
+    grid.innerHTML = '';
+    const filtered = filter === 'all' ? projects : projects.filter(p => p.cat === filter);
+    filtered.forEach(p => {
+        const codeBtn = p.github
+    ? (p.id === 5
+        ? `<a href="${p.github}" class="project-link demo demo-sphinx" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`
+        : `<a href="${p.github}" class="project-link code" target="_blank"><i class="fab fa-github"></i> Code</a>`)
+    : '';
+
+        const demoBtn = p.demo
+    ? (p.demo.endsWith('.pdf')
+        ? `<a href="${p.demo}" class="project-link demo" target="_blank"><i class="fas fa-file-pdf"></i> Voir PDF</a>`
+        : `<a href="${p.demo}" class="project-link demo ${p.id === 5 ? 'demo-sphinx' : ''}" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`)
+    : '';
+
+const liveBtn = p.live
+    ? `<a href="${p.live}" class="project-link demo-live" target="_blank">
+         <i class="fas fa-play"></i> Démo live
+       </a>`
+    : '';
+        grid.innerHTML += `<div class="project-card">
+            <p class="project-cat">${p.catLabel}</p>
+            <h3 class="project-title">${p.title}</h3>
+            <p class="project-desc">${p.desc}</p>
+            <div class="project-tags">${p.tags.map(t=>`<span class="project-tag">${t}</span>`).join('')}</div>
+            <div class="project-links">${codeBtn}${demoBtn}${liveBtn}</div>
+        </div>`;
+    });
+}
+
+document.getElementById('filters').addEventListener('click', e => {
+    if (!e.target.matches('.filter-btn')) return;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    renderProjects(e.target.dataset.filter);
+});
+
+document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('navLinks').classList.toggle('open');
+});
+
+renderProjects('all');
+</script>
+</body>
+</html>

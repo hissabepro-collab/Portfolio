@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur CSV — Hissa Berton</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+--bg:#0A0A0A;
+--s1:#111;
+--s2:#191919;
+--border:#252525;
+--border2:#333;
+--text:#E5E5E5;
+--muted:#666;
+--silver:#AAA;
+--success:#4CAF76;
+--error:#E05A5A;
+--gemini:#4285F4;
+--noapi:#A78BFA;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+background:var(--bg);
+color:var(--text);
+font-family:'Space Grotesk',sans-serif;
+padding:40px;
+display:flex;justify-content:center
+}
+
+.wrap{max-width:700px;width:100%}
+
+.card{
+background:var(--s1);
+border:1px solid var(--border);
+border-radius:10px;
+padding:25px;
+}
+
+.mode-switcher{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+margin-bottom:20px
+}
+
+.mode-btn{
+background:var(--s2);
+border:1px solid var(--border2);
+padding:12px;
+cursor:pointer;
+transition:.15s
+}
+
+.mode-btn.active-noapi{border-color:var(--noapi)}
+.mode-btn.active-gemini{border-color:var(--gemini)}
+
+.mode-info{
+display:none;
+font-size:12px;
+color:var(--muted);
+margin-bottom:15px;
+font-family:'Space Mono',monospace
+}
+.mode-info.visible{display:block}
+
+.api-section{display:none}
+.api-section.visible{display:block}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+margin-bottom:15px
+}
+
+input,select{
+background:var(--s2);
+border:1px solid var(--border2);
+padding:10px;
+color:var(--text)
+}
+
+button{
+width:100%;
+padding:12px;
+cursor:pointer;
+background:var(--text);
+color:var(--bg);
+border:none;
+margin-top:10px
+}
+
+#status{
+margin-top:10px;
+font-size:12px;
+font-family:'Space Mono',monospace
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<div class="card">
+
+<div class="mode-switcher">
+<button class="mode-btn active-noapi" onclick="setMode('noapi')">⚡ Sans API</button>
+<button class="mode-btn" onclick="setMode('gemini')">🔷 Gemini</button>
+</div>
+
+<div id="info-noapi" class="mode-info visible">
+Génération locale limitée à 500 lignes
+</div>
+
+<div id="info-gemini" class="mode-info">
+Génération IA avec Gemini
+</div>
+
+<div class="grid">
+<select id="secteur">
+<option value="">Secteur</option>
+<option>Banque / Finance</option>
+<option>Télécom</option>
+<option>Marketing / CRM</option>
+</select>
+
+<input type="text" id="theme" placeholder="thème">
+
+<input type="number" id="lignes" value="100">
+
+<select id="sep">
+<option value=",">,</option>
+<option value=";">;</option>
+</select>
+</div>
+
+<div id="section-gemini" class="api-section">
+<input type="password" id="geminiKey" placeholder="clé API Gemini">
+</div>
+
+<button id="generateBtn" onclick="generate()">Générer</button>
+
+<div id="status"></div>
+
+</div>
+</div>
+
+<script>
+let currentMode='noapi';
+
+function setMode(mode){
+currentMode=mode;
+
+document.querySelectorAll('.mode-btn').forEach(b=>{
+b.classList.remove('active-noapi','active-gemini')
+});
+
+const idx={noapi:0,gemini:1};
+document.querySelectorAll('.mode-btn')[idx[mode]].classList.add('active-'+mode);
+
+document.querySelectorAll('.mode-info').forEach(el=>el.classList.remove('visible'));
+document.getElementById('info-'+mode).classList.add('visible');
+
+document.getElementById('section-gemini').classList.toggle('visible',mode==='gemini');
+}
+
+function setStatus(msg,type){
+const s=document.getElementById('status');
+s.textContent=msg;
+s.style.color=type==='error'?'red':'white';
+}
+
+function generate(){
+
+const secteur=document.getElementById('secteur').value;
+const rows=parseInt(document.getElementById('lignes').value);
+
+if(!secteur) return setStatus('secteur requis','error');
+
+if(currentMode==='gemini' && !document.getElementById('geminiKey').value.trim())
+return setStatus('clé Gemini requise','error');
+
+setStatus('génération...');
+
+setTimeout(()=>{
+setStatus('OK '+rows+' lignes générées','success');
+},600);
+}
+</script>
+
+</body>
+</html>

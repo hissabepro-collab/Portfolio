@@ -1,0 +1,20 @@
+# Fichiers sensibles à ne JAMAIS committer
+.env
+*.env
+config.local.js
+secrets.json
+
+# Workflow avec vraies valeurs
+workflow_candidatures_hissa.json
+workflow_candidatures_hissa_*.json
+
+# Seul ce fichier peut être commité pour le workflow
+# workflow_public.json ✅
+
+# Node
+node_modules/
+npm-debug.log
+
+# OS
+.DS_Store
+Thumbs.db
