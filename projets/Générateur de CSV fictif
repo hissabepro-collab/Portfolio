@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Générateur CSV — Hissa Berton</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+–bg: #0A0A0A;
+–s1: #111111;
+–s2: #191919;
+–border: #252525;
+–border2: #333333;
+–text: #E5E5E5;
+–muted: #666666;
+–silver: #AAAAAA;
+–accent: #E5E5E5;
+–success: #4CAF76;
+–error: #E05A5A;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘Space Grotesk’, sans-serif;
+min-height: 100vh;
+padding: 56px 20px 100px;
+display: flex; flex-direction: column; align-items: center;
+}
+
+.wrap { width: 100%; max-width: 700px; }
+
+/* header */
+header { margin-bottom: 48px; }
+
+.sig {
+display: flex; align-items: center; gap: 16px;
+font-family: ‘Space Mono’, monospace;
+font-size: 10px; color: var(–muted);
+letter-spacing: 0.15em; text-transform: uppercase;
+margin-bottom: 28px;
+}
+.sig::after { content: ‘’; flex: 1; height: 1px; background: var(–border2); }
+
+h1 {
+font-size: clamp(28px, 4.5vw, 42px);
+font-weight: 600;
+letter-spacing: -0.02em;
+line-height: 1.1;
+margin-bottom: 10px;
+}
+h1 em {
+font-style: normal;
+color: var(–muted);
+font-weight: 300;
+}
+
+.desc { font-size: 14px; color: var(–muted); line-height: 1.6; font-weight: 300; max-width: 500px; }
+
+/* card */
+.card {
+background: var(–s1);
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 28px;
+margin-bottom: 16px;
+}
+
+.card-label {
+font-family: ‘Space Mono’, monospace;
+font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+color: var(–muted); margin-bottom: 24px;
+padding-bottom: 16px; border-bottom: 1px solid var(–border);
+display: flex; align-items: center; gap: 8px;
+}
+.card-label::before { content: ‘//’; color: var(–border2); }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.full { grid-column: 1 / -1; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+
+label {
+font-size: 10px; letter-spacing: 0.1em;
+color: var(–muted); text-transform: uppercase;
+font-family: ‘Space Mono’, monospace;
+}
+
+input, select {
+background: var(–s2);
+border: 1px solid var(–border2);
+border-radius: 6px;
+color: var(–text);
+font-family: ‘Space Grotesk’, sans-serif;
+font-size: 14px; font-weight: 300;
+padding: 10px 13px;
+outline: none;
+transition: border-color 0.15s;
+width: 100%;
+}
+input:focus, select:focus { border-color: var(–silver); }
+select option { background: #191919; }
+.hint { font-size: 11px; color: var(–border2); font-family: ‘Space Mono’, monospace; }
+
+/* checkboxes */
+.checks { display: flex; flex-wrap: wrap; gap: 18px; }
+.check-item {
+display: flex; align-items: center; gap: 8px;
+font-size: 13px; color: var(–muted); cursor: pointer; transition: color 0.15s;
+font-weight: 300;
+}
+.check-item:hover { color: var(–text); }
+.check-item input[type=checkbox] {
+width: 15px; height: 15px; accent-color: var(–silver); cursor: pointer;
+}
+
+/* api */
+.api-row { display: flex; gap: 8px; align-items: flex-end; }
+.api-row .field { flex: 1; }
+.eye-btn {
+background: var(–s2); border: 1px solid var(–border2);
+border-radius: 6px; color: var(–muted); cursor: pointer;
+width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+font-size: 14px; flex-shrink: 0; transition: border-color 0.15s;
+}
+.eye-btn:hover { border-color: var(–silver); }
+
+/* button */
+#generateBtn {
+width: 100%; padding: 14px;
+background: var(–text); color: var(–bg);
+border: none; border-radius: 8px;
+font-family: ‘Space Grotesk’, sans-serif;
+font-size: 13px; font-weight: 600;
+letter-spacing: 0.04em; cursor: pointer;
+transition: all 0.15s;
+display: flex; align-items: center; justify-content: center; gap: 10px;
+margin-top: 6px;
+}
+#generateBtn:hover:not(:disabled) { background: #fff; transform: translateY(-1px); }
+#generateBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.spinner {
+width: 14px; height: 14px;
+border: 1.5px solid rgba(0,0,0,0.2); border-top-color: #000;
+border-radius: 50%; animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+#status {
+font-size: 12px; padding: 11px 14px; border-radius: 6px;
+margin-top: 14px; display: none; align-items: center; gap: 10px;
+font-family: ‘Space Mono’, monospace;
+}
+#status.info    { display: flex; background: #1A1A1A; color: var(–muted); }
+#status.success { display: flex; background: rgba(76,175,118,0.08); border: 1px solid rgba(76,175,118,0.2); color: var(–success); }
+#status.error   { display: flex; background: rgba(224,90,90,0.08); border: 1px solid rgba(224,90,90,0.2); color: var(–error); }
+#status .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+/* preview */
+#preview-card { display: none; }
+#preview-card.visible { display: block; }
+
+.preview-header {
+display: flex; align-items: center; justify-content: space-between;
+margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+}
+.preview-meta { font-family: ‘Space Mono’, monospace; font-size: 11px; color: var(–muted); }
+.preview-meta strong { color: var(–silver); }
+
+.dl-btn {
+background: transparent; border: 1px solid var(–border2);
+color: var(–silver); border-radius: 6px;
+font-family: ‘Space Mono’, monospace; font-size: 10px;
+letter-spacing: 0.1em; padding: 8px 16px;
+cursor: pointer; transition: all 0.15s;
+display: flex; align-items: center; gap: 6px;
+}
+.dl-btn:hover { border-color: var(–silver); color: var(–text); }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(–border); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th {
+padding: 10px 13px; text-align: left; background: var(–s2);
+color: var(–silver); font-family: ‘Space Mono’, monospace;
+font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+border-bottom: 1px solid var(–border); white-space: nowrap; font-weight: 400;
+}
+td {
+padding: 8px 13px; color: var(–muted);
+border-bottom: 1px solid var(–border); white-space: nowrap; font-weight: 300;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { color: var(–text); }
+
+footer {
+margin-top: 40px; text-align: center;
+font-family: ‘Space Mono’, monospace; font-size: 10px;
+color: var(–border2); line-height: 1.8;
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="sig">Hissa Berton · Data Analyst</p>
+    <h1>Générateur<br><em>de données CSV</em></h1>
+    <p class="desc" style="margin-top:12px">Créez des datasets synthétiques cohérents et réalistes en quelques secondes, grâce à l'API Claude d'Anthropic.</p>
+  </header>
+
+  <div class="card">
+    <p class="card-label">Configuration</p>
+    <div class="grid">
+      <div class="field">
+        <label>Secteur *</label>
+        <select id="secteur">
+          <option value="">— Choisir —</option>
+          <option>Banque / Finance</option><option>Télécom</option>
+          <option>Retail / E-commerce</option><option>Santé</option>
+          <option>Assurance</option><option>Jeux vidéo</option>
+          <option>Ressources humaines</option><option>Immobilier</option>
+          <option>Transport / Logistique</option><option>Marketing / CRM</option>
+          <option>Éducation</option><option>Énergie</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Thème</label>
+        <input type="text" id="theme" placeholder="mobile, churn…">
+      </div>
+      <div class="field">
+        <label>Colonnes</label>
+        <select id="colonnes">
+          <option value="3">3</option><option value="4">4</option>
+          <option value="5" selected>5</option><option value="6">6</option>
+          <option value="7">7</option><option value="8">8</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Lignes *</label>
+        <input type="number" id="lignes" value="200" min="10" max="2000">
+        <span class="hint">// 10 – 2 000</span>
+      </div>
+      <div class="field">
+        <label>Nom fichier</label>
+        <input type="text" id="nomFichier" placeholder="dataset_clients">
+      </div>
+      <div class="field">
+        <label>Séparateur</label>
+        <select id="sep">
+          <option value=",">, virgule</option>
+          <option value=";">; point-virgule</option>
+          <option value="\t">tabulation</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label>Options</label>
+        <div class="checks">
+          <label class="check-item"><input type="checkbox" id="nulls" checked> Valeurs nulles (~3%)</label>
+          <label class="check-item"><input type="checkbox" id="doublons"> Doublons (~1%)</label>
+          <label class="check-item"><input type="checkbox" id="enHeader" checked> Headers anglais</label>
+        </div>
+      </div>
+      <div class="field full">
+        <label>Clé API Anthropic *</label>
+        <div class="api-row">
+          <div class="field" style="margin:0">
+            <input type="password" id="apiKey" placeholder="sk-ant-…">
+          </div>
+          <button class="eye-btn" onclick="toggleKey()">👁</button>
+        </div>
+        <span class="hint">// côté client uniquement, jamais transmise</span>
+      </div>
+    </div>
+    <br>
+    <button id="generateBtn" onclick="generate()">
+      <span id="btnText">Générer les données</span>
+    </button>
+    <div id="status"></div>
+  </div>
+
+  <div class="card" id="preview-card">
+    <div class="preview-header">
+      <p class="preview-meta"><strong id="pm-name"></strong><span id="pm-info"></span></p>
+      <button class="dl-btn" onclick="downloadCSV()">↓ télécharger .csv</button>
+    </div>
+    <div class="table-wrap">
+      <table id="preview-table"></table>
+    </div>
+  </div>
+
+  <footer>HISSA BERTON — DATA ANALYST CRM<br>Master 1 Marketing & Data Analytics · Université de Montpellier · 2024–2025</footer>
+</div>
+<script>
+let csvContent = '';
+function toggleKey() { const k = document.getElementById('apiKey'); k.type = k.type === 'password' ? 'text' : 'password'; }
+function setStatus(msg, type) { const s = document.getElementById('status'); s.className = type; s.innerHTML = `<span class="dot"></span>${msg}`; }
+function setLoading(on) {
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = on;
+  btn.innerHTML = on
+    ? '<span class="spinner"></span><span id="btnText">Génération en cours…</span>'
+    : '<span id="btnText">Générer les données</span>';
+}
+async function generate() {
+  const secteur = document.getElementById('secteur').value;
+  const theme   = document.getElementById('theme').value;
+  const cols    = document.getElementById('colonnes').value;
+  const rows    = parseInt(document.getElementById('lignes').value);
+  const key     = document.getElementById('apiKey').value.trim();
+  const nulls   = document.getElementById('nulls').checked;
+  const dups    = document.getElementById('doublons').checked;
+  const enHdr   = document.getElementById('enHeader').checked;
+  const sep     = document.getElementById('sep').value;
+  if (!secteur) return setStatus('Veuillez sélectionner un secteur.', 'error');
+  if (!key) return setStatus('Clé API requise.', 'error');
+  if (!rows || rows < 10) return setStatus('Minimum 10 lignes.', 'error');
+  setLoading(true);
+  setStatus('Connexion à Claude…', 'info');
+  document.getElementById('preview-card').classList.remove('visible');
+  try {
+    const sepLabel = sep === ',' ? 'virgule' : sep === ';' ? 'point-virgule' : 'tabulation';
+    const themeStr = theme ? ` avec focus : ${theme}` : '';
+    const prompt = `Génère exactement ${rows} lignes CSV pour le secteur "${secteur}"${themeStr}.\n${cols} colonnes pertinentes. Séparateur : ${sepLabel}. Headers ${enHdr ? 'en anglais' : 'en français'} (snake_case).\nDonnées cohérentes et réalistes.${nulls ? ' ~3% valeurs nulles.' : ''}${dups ? ' ~1% doublons.' : ''}\nRéponds UNIQUEMENT avec le CSV brut, aucun texte avant ou après.`;
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] })
+    });
+    if (!res.ok) { const e = await res.json().catch(()=>{}); throw new Error(e?.error?.message || `HTTP ${res.status}`); }
+    const data = await res.json();
+    let raw = data.content.map(c => c.text||'').join('').replace(/```[a-z]*\n?/g,'').trim();
+    csvContent = raw;
+    const sepChar = sep === '\\t' ? '\t' : sep;
+    const lines = raw.split('\n').filter(l => l.trim());
+    const headers = lines[0].split(sepChar).map(h => h.replace(/^["']|["']$/g,'').trim());
+    const allRows = lines.slice(1).map(l => l.split(sepChar).map(c => c.replace(/^["']|["']$/g,'').trim()));
+    let html = '<thead><tr>' + headers.map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+    for (const r of allRows.slice(0,12)) html += '<tr>' + r.map(c=>`<td>${c||'—'}</td>`).join('') + '</tr>';
+    html += '</tbody>';
+    document.getElementById('preview-table').innerHTML = html;
+    const nom = document.getElementById('nomFichier').value.trim() || `dataset_${secteur.replace(/\W+/g,'_').toLowerCase()}`;
+    document.getElementById('pm-name').textContent = nom + '.csv';
+    document.getElementById('pm-info').textContent = `  //  ${headers.length} col  ·  ${allRows.length} lignes`;
+    document.getElementById('preview-card').classList.add('visible');
+    setStatus(`OK — ${allRows.length} lignes, ${headers.length} colonnes générées.`, 'success');
+  } catch(e) { setStatus(`Erreur : ${e.message}`, 'error'); }
+  finally { setLoading(false); }
+}
+function downloadCSV() {
+  if (!csvContent) return;
+  const nom = document.getElementById('nomFichier').value.trim() || 'dataset';
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nom + '.csv'; a.click();
+}
+</script>
+</body>
+</html>
