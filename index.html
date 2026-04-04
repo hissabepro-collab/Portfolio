@@ -406,15 +406,16 @@ function renderProjects(filter) {
     : '';
 
         const demoBtn = p.demo
-			const liveBtn = p.live
+    ? (p.demo.endsWith('.pdf')
+        ? `<a href="${p.demo}" class="project-link demo" target="_blank"><i class="fas fa-file-pdf"></i> Voir PDF</a>`
+        : `<a href="${p.demo}" class="project-link demo ${p.id === 5 ? 'demo-sphinx' : ''}" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`)
+    : '';
+
+const liveBtn = p.live
     ? `<a href="${p.live}" class="project-link demo-live" target="_blank">
          <i class="fas fa-play"></i> Démo live
        </a>`
     : '';
-            ? (p.demo.endsWith('.pdf')
-                ? `<a href="${p.demo}" class="project-link demo" target="_blank"><i class="fas fa-file-pdf"></i> Voir PDF</a>`
-                : `<a href="${p.demo}" class="project-link demo ${p.id === 5 ? 'demo-sphinx' : ''}" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`)
-            : '';
         grid.innerHTML += `<div class="project-card">
             <p class="project-cat">${p.catLabel}</p>
             <h3 class="project-title">${p.title}</h3>
