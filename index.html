@@ -106,6 +106,15 @@
         .project-link.code { background: var(--ink); color: var(--paper); border-color: var(--ink); }
         .project-link.code:hover { background: var(--accent2); border-color: var(--accent2); }
         .project-link.demo { background: var(--accent); color: white; border-color: var(--accent); }
+		.project-link.demo-live {
+    background: #10b981;
+    border-color: #10b981;
+    color: white;
+}
+
+.project-link.demo-live:hover {
+    background: #059669;
+}
         .project-link.demo:hover { opacity: .85; }
 	.project-link.demo-sphinx { background: #6b2d8b; border-color: #6b2d8b; }
 	.project-link.demo-sphinx:hover { background: #55226e; border-color: #55226e; opacity: 1; }
@@ -370,6 +379,7 @@ const projects = [
         tags: ["Python", "CSV", "Data", "Generateur"],
         github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/G%C3%A9n%C3%A9rateur%20de%20CSV%20fictif",
         demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Generateur%20de%20donnees%20CSV%20fictives.pdf"
+		live: "https://hissabepro-collab.github.io/Portefeuille/projets/generateur-csv.html"
     },
 {
         id: 10,
@@ -396,6 +406,11 @@ function renderProjects(filter) {
     : '';
 
         const demoBtn = p.demo
+			const liveBtn = p.live
+    ? `<a href="${p.live}" class="project-link demo-live" target="_blank">
+         <i class="fas fa-play"></i> Démo live
+       </a>`
+    : '';
             ? (p.demo.endsWith('.pdf')
                 ? `<a href="${p.demo}" class="project-link demo" target="_blank"><i class="fas fa-file-pdf"></i> Voir PDF</a>`
                 : `<a href="${p.demo}" class="project-link demo ${p.id === 5 ? 'demo-sphinx' : ''}" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`)
@@ -405,7 +420,7 @@ function renderProjects(filter) {
             <h3 class="project-title">${p.title}</h3>
             <p class="project-desc">${p.desc}</p>
             <div class="project-tags">${p.tags.map(t=>`<span class="project-tag">${t}</span>`).join('')}</div>
-            <div class="project-links">${codeBtn}${demoBtn}</div>
+            <div class="project-links">${codeBtn}${demoBtn}${liveBtn}</div>
         </div>`;
     });
 }
