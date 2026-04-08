@@ -158,44 +158,6 @@
             .hamburger { display: flex; }
             .nav-links { position: fixed; top: 60px; left: 0; right: 0; background: var(--paper); flex-direction: column; align-items: center; padding: 2rem; gap: 1.5rem; border-bottom: 1px solid var(--border); transform: translateY(-110%); transition: transform .3s; z-index: 99; }
             .nav-links.open { transform: translateY(0); }
-			/* DERNIÈRE RÈGLE ACTUELLE */
-.hamburger span {
-  width: 24px;
-  height: 1.5px;
-  background: var(--ink);
-  transition: .3s;
-}
-
-/* TU AJOUTES ICI */
-.video-placeholder {
-  position: relative;
-  max-width: 320px;
-  aspect-ratio: 16/9;
-  cursor: pointer;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
-
-.video-placeholder img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.play-btn {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 60px;
-  height: 40px;
-  background: red;
-  border-radius: 8px;
-}
-
-/* PUIS */
-</style>
         }
     </style>
 </head>
@@ -311,6 +273,7 @@
 </section>
 
 <footer>&copy; 2025 Hissa Berton -- Marketing & Data Analyst &nbsp;·&nbsp; Tous droits réservés</footer>
+
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script>
 // MARQUEE
@@ -331,30 +294,102 @@ const projects = [
         title: "Modèle prédictif de l'attrition client",
         cat: "analyse",
         catLabel: "Machine Learning",
-        desc: "Un client bancaire sur cinq part sans signe avant-coureur...",
+        desc: "Un client bancaire sur cinq part sans signe avant-coureur. J'ai construit un modèle Random Forest atteignant 90% de précision pour identifier les profils à risque, avec des variables directement restituables aux équipes métier.",
         tags: ["Python", "Pandas", "Scikit-learn", "Random Forest", "EDA"],
         github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Mod%C3%A8le_pr%C3%A9dictif_d'attrition_client.ipynb",
         demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Modele_predictif_attrition_client.pdf"
+    },
+    {
+        id: 2,
+        title: "Fiabilisation d'un dataset client et prediction de l'attrition telecom",
+        cat: "analyse",
+        catLabel: "Data Preparation",
+        desc: "Sur 40 000+ clients télécom, j'ai corrigé chaque anomalie avec une logique métier documentée : anciennetés négatives, charges incohérentes, doublons. Zéro perte de donnée critique — un dataset fiable, prêt pour la production.",
+        tags: ["Python", "Pandas", "Nettoyage", "Feature Engineering", "Random Forest"],
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Fiabilisation%20d'un%20dataset%20client%20et%20pr%C3%A9diction%20de%20l'attrition%20t%C3%A9l%C3%A9com.ipynb",
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Fiabilisation%20nettoyage%20d'un%20dataset%20client%20et%20pr%C3%A9diction%20de%20l'attrition%20telecom.pdf"
+    },
+    {
+        id: 3,
+        title: "Analyse sémantique d'une campagne d'influence Crédit Agricole du Languedoc",
+        cat: "analyse",
+        catLabel: "NLP / Text Mining",
+        desc: "220 000 vues, mais est-ce que ça a vraiment marché ? J'ai analysé 175 commentaires YouTube d'une campagne Crédit Agricole pour cartographier thèmes, sentiments et engagement réel de la cible.",
+        tags: ["Python", "BERTopic", "NLP", "YouTube API", "Sentiment Analysis"],
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Analyse_s%C3%A9mantique_d'une_campagne_d'influence.ipynb",
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Analyse%20s%C3%A9mantique%20d'une%20campagne%20d'influence%20Cr%C3%A9dit%20Agricole%20du%20Languedoc.pdf"
+    },
+    {
+        id: 4,
+        title: "Régression logistique — Facteurs de risque cardiaque",
+        cat: "analyse",
+        catLabel: "Statistiques / R",
+        desc: "Sur 303 patients, j'ai modélisé le risque cardiaque sous R et mis en évidence que les hommes ont 4x plus de risques que les femmes. Résultats restitués en Forest Plot lisible par un profil non technique.",
+        tags: ["R", "GLM", "Odds Ratio", "Regression logistique", "ggplot2"],
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/R%C3%A9gression%20logistique%20%E2%80%94%20Facteurs%20de%20risque%20cardiaque.R",
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Regression_logistique_cardiaque.pdf"
     },
     {
         id: 5,
         title: "Dashboard de pilotage commercial — Supply Chain - SportWorld",
         cat: "viz",
         catLabel: "Data Visualisation",
-        desc: "57 % des commandes livrées en retard...",
-        tags: ["Power BI", "Data Modeling", "KPI"],
+        desc: "57 % des commandes livrées en retard sur 66 000 transactions : identification d’une défaillance structurelle logistique via un dashboard Power BI multi-vues. Modélisation en étoile, création de KPI stratégiques (CA, marge, retards, annulations) et restitution orientée décision pour prioriser marchés et catégories.",
+        tags: ["Power BI", "Data Modeling", "KPI", "Supply Chain", "Data Analytics"],
         github: "https://d.dataviv.net/r/kvWxtYJylS",
         demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Dashboard_PowerBI_SportWorld.pdf"
+    },
+    {
+        id: 6,
+        title: "Analyse de la pression relationnelle client & automatisation du reporting - Crédit Agricole du Languedoc",
+        cat: "auto",
+        catLabel: "Automatisation SAS",
+        desc: "Une macro SAS paramétrée qui profile automatiquement 100 000+ clients par segment sur 8 dimensions : âge, revenus, CSP, équipement. Un seul appel, tous les graphiques. Déployé en production au Crédit Agricole.",
+        tags: ["SAS EG", "Macro SAS", "PROC SQL", "PROC SGPLOT"],
+        github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/Projet%20segmentation%20automatique%20des%20clients.sas",
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Segmentation_client_CRM.pdf"
+    },
+    {
+        id: 7,
+        title: "Mémoire Master 1",
+        cat: "recherche",
+        catLabel: "Recherche scientifique",
+        desc: "18,8 milliards dépensés en 2023 pour des objets virtuels sans valeur fonctionnelle. À travers 12 entretiens, j'ai identifié les mécanismes identitaires et sociaux derrière ces achats.",
+        tags: ["Recherche qualitative", "Marketing", "Jeux vidéo", "Identité numérique", "Entretiens"],
+        github: null,
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Me%CC%81moire%20BERTON%20Hissa.pdf"
     },
     {
         id: 8,
         title: "Automatisation de workflows — N8N",
         cat: "auto",
         catLabel: "Automatisation",
-        desc: "Je candidate, N8N fait le reste...",
-        tags: ["N8N", "API", "Workflow"],
+        desc: "Je candidate, N8N fait le reste. Chaque e-mail de recrutement est lu, analysé par Gemini et inscrit automatiquement dans Google Sheets. Alerte Telegram immédiate, rappel de relance à J+7 et résumé hebdomadaire chaque dimanche — zéro saisie manuelle.",
+        tags: ["N8N", "Automatisation", "API", "Workflow", "No-code"],
         github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/suivi-candidatures-n8n/workflow_public.json",
-        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/workflow%20n8n.pdf"
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/workflow%20n8n.pdf",
+        live: null
+    },
+    {
+        id: 9,
+        title: "Générateur de données CSV fictives",
+        cat: "auto",
+        catLabel: "Automatisation",
+        desc: "Outil de génération de datasets fictifs cohérents, paramétrables par secteur et logique métier. Deux modes : génération locale instantanée ou assistée par IA Gemini. Zéro serveur, 100% navigateur.",
+        tags: ["Python", "CSV", "Data", "Generateur"],
+        github: "https://github.com/hissabepro-collab/Portfolio/edit/main/projets/generateurCSV.html",
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Ge%CC%81ne%CC%81rateur%20de%20donne%CC%81es%20CSV%20fictif.pdf",
+        live: "https://hissabepro-collab.github.io/Portfolio/projets/generateurCSV.html"
+    },
+    {
+        id: 10,
+        title: "CV - Hissa Berton",
+        cat: "recherche",
+        catLabel: "Curriculum Vitae",
+        desc: "Vous souhaitez en savoir plus sur mon parcours, mes expériences et mes compétences ? Mon CV est disponible via le lien.",
+        tags: ["Data Analyst", "Alternance", "Master"],
+        github: null,
+        demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/CV%20Hissa%20Berton.pdf"
     }
 ];
 
@@ -370,31 +405,40 @@ function renderProjects(filter) {
     filtered.forEach(p => {
 
         const codeBtn = p.github
-            ? `<a href="${p.github}" class="project-link code" target="_blank"><i class="fab fa-github"></i> Code</a>`
+            ? (p.id === 5
+                ? `<a href="${p.github}" class="project-link demo demo-sphinx" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`
+                : `<a href="${p.github}" class="project-link code" target="_blank"><i class="fab fa-github"></i> Code</a>`)
             : '';
 
         const demoBtn = p.demo
-            ? `<a href="${p.demo}" class="project-link demo" target="_blank"><i class="fas fa-file-pdf"></i> Voir PDF</a>`
+            ? (p.demo.endsWith('.pdf')
+                ? `<a href="${p.demo}" class="project-link demo" target="_blank"><i class="fas fa-file-pdf"></i> Voir PDF</a>`
+                : `<a href="${p.demo}" class="project-link demo ${p.id === 5 ? 'demo-sphinx' : ''}" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`)
             : '';
 
+        const liveBtn = p.live
+            ? `<a href="${p.live}" class="project-link demo-live" target="_blank">
+                    <i class="fas fa-play"></i> Démo live
+               </a>`
+            : '';
+
+        // AJOUT VIDEO STRICT (aucun impact ailleurs)
         let videoBlock = '';
 
-        // POWER BI
         if (p.id === 5) {
             videoBlock = `
-            <div class="video-placeholder" data-id="claf8YSefT8">
-                <img src="https://img.youtube.com/vi/claf8YSefT8/maxresdefault.jpg">
-                <div class="play-btn"></div>
-            </div>`;
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/claf8YSefT8" allowfullscreen></iframe>
+                </div>
+            `;
         }
 
-        // N8N
         if (p.id === 8) {
             videoBlock = `
-            <div class="video-placeholder" data-id="w97wAkzsCK4">
-                <img src="https://img.youtube.com/vi/w97wAkzsCK4/maxresdefault.jpg">
-                <div class="play-btn"></div>
-            </div>`;
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/gIQ8Gdm7SZU" allowfullscreen></iframe>
+                </div>
+            `;
         }
 
         grid.innerHTML += `
@@ -409,27 +453,12 @@ function renderProjects(filter) {
                     ${p.tags.map(t => `<span class="project-tag">${t}</span>`).join('')}
                 </div>
                 <div class="project-links">
-                    ${codeBtn}${demoBtn}
+                    ${codeBtn}${demoBtn}${liveBtn}
                 </div>
             </div>
         `;
     });
 }
-
-// CLICK VIDEO → LOAD YOUTUBE
-document.addEventListener("click", function(e) {
-    const el = e.target.closest(".video-placeholder");
-    if (!el) return;
-
-    const id = el.dataset.id;
-
-    el.innerHTML = `
-        <iframe 
-            src="https://www.youtube.com/embed/${id}?autoplay=1" 
-            allowfullscreen>
-        </iframe>
-    `;
-});
 
 // FILTERS
 document.getElementById('filters').addEventListener('click', e => {
