@@ -147,31 +147,6 @@ tu écris une partie a chaque fois alors que je te demande d'écrire tout le fic
             .projects-grid { grid-template-columns: 1fr; }
             .contact { grid-template-columns: 1fr; padding: 5rem 2rem; gap: 3rem; }
         }
-        @media (max-width: 640px) {
-            .skills-row { grid-template-columns: 1fr; }
-            .projects-header { flex-direction: column; }
-            .section-title::after { display: none; }
-        }
-        .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
-        .hamburger span { width: 24px; height: 1.5px; background: var(--ink); transition: .3s; }
-        @media (max-width: 768px) {
-            .hamburger { display: flex; }
-            .nav-links { position: fixed; top: 60px; left: 0; right: 0; background: var(--paper); flex-direction: column; align-items: center; padding: 2rem; gap: 1.5rem; border-bottom: 1px solid var(--border); transform: translateY(-110%); transition: transform .3s; z-index: 99; }
-            .nav-links.open { transform: translateY(0); }
-        }
-        document.addEventListener("click", function(e) {
-    const el = e.target.closest(".video-placeholder");
-    if (!el) return;
-
-    const id = el.dataset.id;
-
-    el.innerHTML = `
-        <iframe 
-            src="https://www.youtube.com/embed/${id}?autoplay=1" 
-            allowfullscreen>
-        </iframe>
-    `;
-});
     </style>
 </head>
 <body>
