@@ -274,10 +274,12 @@
 
 <footer>&copy; 2025 Hissa Berton -- Marketing & Data Analyst &nbsp;·&nbsp; Tous droits réservés</footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
 // MARQUEE
 const items = ['SAS Enterprise Guide','Analyse segmentée','SQL','Power BI','Python','Automatisation','Macros SAS','Visualisation','R','Pipelines analytiques'];
 const track = document.getElementById('marquee');
+
 [...items, ...items].forEach(t => {
     const el = document.createElement('span');
     el.className = 'marquee-item';
@@ -286,7 +288,7 @@ const track = document.getElementById('marquee');
 });
 
 // PROJECTS DATA
-    const projects = [
+const projects = [
     {
         id: 1,
         title: "Modèle prédictif de l'attrition client",
@@ -332,8 +334,8 @@ const track = document.getElementById('marquee');
         title: "Dashboard de pilotage commercial — Supply Chain - SportWorld",
         cat: "viz",
         catLabel: "Data Visualisation",
-		desc: "57 % des commandes livrées en retard sur 66 000 transactions : identification d’une défaillance structurelle logistique via un dashboard Power BI multi-vues. Modélisation en étoile, création de KPI stratégiques (CA, marge, retards, annulations) et restitution orientée décision pour prioriser marchés et catégories.",
-		tags: ["Power BI", "Data Modeling", "KPI", "Supply Chain", "Data Analytics"],
+        desc: "57 % des commandes livrées en retard sur 66 000 transactions : identification d’une défaillance structurelle logistique via un dashboard Power BI multi-vues. Modélisation en étoile, création de KPI stratégiques (CA, marge, retards, annulations) et restitution orientée décision pour prioriser marchés et catégories.",
+        tags: ["Power BI", "Data Modeling", "KPI", "Supply Chain", "Data Analytics"],
         github: "https://d.dataviv.net/r/kvWxtYJylS",
         demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Dashboard_PowerBI_SportWorld.pdf"
     },
@@ -362,11 +364,11 @@ const track = document.getElementById('marquee');
         title: "Automatisation de workflows — N8N",
         cat: "auto",
         catLabel: "Automatisation",
-		desc:"Je candidate, N8N fait le reste. Chaque e-mail de recrutement est lu, analysé par Gemini et inscrit automatiquement dans Google Sheets. Alerte Telegram immédiate, rappel de relance à J+7 et résumé hebdomadaire chaque dimanche — zéro saisie manuelle.",
+        desc: "Je candidate, N8N fait le reste. Chaque e-mail de recrutement est lu, analysé par Gemini et inscrit automatiquement dans Google Sheets. Alerte Telegram immédiate, rappel de relance à J+7 et résumé hebdomadaire chaque dimanche — zéro saisie manuelle.",
         tags: ["N8N", "Automatisation", "API", "Workflow", "No-code"],
         github: "https://github.com/hissabepro-collab/Portfolio/blob/main/projets/suivi-candidatures-n8n/workflow_public.json",
         demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/workflow%20n8n.pdf",
-		live:null
+        live: null
     },
     {
         id: 9,
@@ -391,51 +393,89 @@ const track = document.getElementById('marquee');
     }
 ];
 
-
+// RENDER
 function renderProjects(filter) {
     const grid = document.getElementById('projects-grid');
     grid.innerHTML = '';
-    const filtered = filter === 'all' ? projects : projects.filter(p => p.cat === filter);
+
+    const filtered = filter === 'all'
+        ? projects
+        : projects.filter(p => p.cat === filter);
+
     filtered.forEach(p => {
+
         const codeBtn = p.github
-    ? (p.id === 5
-        ? `<a href="${p.github}" class="project-link demo demo-sphinx" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`
-        : `<a href="${p.github}" class="project-link code" target="_blank"><i class="fab fa-github"></i> Code</a>`)
-    : '';
+            ? (p.id === 5
+                ? `<a href="${p.github}" class="project-link demo demo-sphinx" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`
+                : `<a href="${p.github}" class="project-link code" target="_blank"><i class="fab fa-github"></i> Code</a>`)
+            : '';
 
         const demoBtn = p.demo
-    ? (p.demo.endsWith('.pdf')
-        ? `<a href="${p.demo}" class="project-link demo" target="_blank"><i class="fas fa-file-pdf"></i> Voir PDF</a>`
-        : `<a href="${p.demo}" class="project-link demo ${p.id === 5 ? 'demo-sphinx' : ''}" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`)
-    : '';
+            ? (p.demo.endsWith('.pdf')
+                ? `<a href="${p.demo}" class="project-link demo" target="_blank"><i class="fas fa-file-pdf"></i> Voir PDF</a>`
+                : `<a href="${p.demo}" class="project-link demo ${p.id === 5 ? 'demo-sphinx' : ''}" target="_blank"><i class="fas fa-eye"></i> Visualiser</a>`)
+            : '';
 
-const liveBtn = p.live
-    ? `<a href="${p.live}" class="project-link demo-live" target="_blank">
-         <i class="fas fa-play"></i> Démo live
-       </a>`
-    : '';
-        grid.innerHTML += `<div class="project-card">
-            <p class="project-cat">${p.catLabel}</p>
-            <h3 class="project-title">${p.title}</h3>
-            <p class="project-desc">${p.desc}</p>
-            <div class="project-tags">${p.tags.map(t=>`<span class="project-tag">${t}</span>`).join('')}</div>
-            <div class="project-links">${codeBtn}${demoBtn}${liveBtn}</div>
-        </div>`;
+        const liveBtn = p.live
+            ? `<a href="${p.live}" class="project-link demo-live" target="_blank">
+                    <i class="fas fa-play"></i> Démo live
+               </a>`
+            : '';
+
+        // AJOUT VIDEO STRICT (aucun impact ailleurs)
+        let videoBlock = '';
+
+        if (p.id === 5) {
+            videoBlock = `
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/claf8YSefT8" allowfullscreen></iframe>
+                </div>
+            `;
+        }
+
+        if (p.id === 8) {
+            videoBlock = `
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/gIQ8Gdm7SZU" allowfullscreen></iframe>
+                </div>
+            `;
+        }
+
+        grid.innerHTML += `
+            <div class="project-card">
+                <p class="project-cat">${p.catLabel}</p>
+                <h3 class="project-title">${p.title}</h3>
+
+                ${videoBlock}
+
+                <p class="project-desc">${p.desc}</p>
+                <div class="project-tags">
+                    ${p.tags.map(t => `<span class="project-tag">${t}</span>`).join('')}
+                </div>
+                <div class="project-links">
+                    ${codeBtn}${demoBtn}${liveBtn}
+                </div>
+            </div>
+        `;
     });
 }
 
+// FILTERS
 document.getElementById('filters').addEventListener('click', e => {
     if (!e.target.matches('.filter-btn')) return;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+
+    document.querySelectorAll('.filter-btn')
+        .forEach(b => b.classList.remove('active'));
+
     e.target.classList.add('active');
     renderProjects(e.target.dataset.filter);
 });
 
+// NAV MOBILE
 document.getElementById('hamburger').addEventListener('click', () => {
     document.getElementById('navLinks').classList.toggle('open');
 });
 
+// INIT
 renderProjects('all');
 </script>
-</body>
-</html>
