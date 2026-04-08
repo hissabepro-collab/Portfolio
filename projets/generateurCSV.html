@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -9,30 +8,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
-–bg: #0A0A0A;
-–s1: #111111;
-–s2: #191919;
-–border: #252525;
-–border2: #333333;
-–text: #E5E5E5;
-–muted: #666666;
-–silver: #AAAAAA;
-–success: #4CAF76;
-–error: #E05A5A;
-–gemini: #4285F4;
-–noapi: #A78BFA;
+  --bg: #0A0A0A;
+  --s1: #111111;
+  --s2: #191919;
+  --border: #252525;
+  --border2: #333333;
+  --text: #E5E5E5;
+  --muted: #666666;
+  --silver: #AAAAAA;
+  --success: #4CAF76;
+  --error: #E05A5A;
+  --gemini: #4285F4;
+  --noapi: #A78BFA;
 
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-background: var(–bg);
-color: var(–text);
-font-family: ‘Space Grotesk’, sans-serif;
-min-height: 100vh;
-padding: 56px 20px 100px;
-display: flex; flex-direction: column; align-items: center;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh;
+  padding: 56px 20px 100px;
+  display: flex; flex-direction: column; align-items: center;
 }
 
 .wrap { width: 100%; max-width: 700px; }
@@ -41,91 +40,91 @@ display: flex; flex-direction: column; align-items: center;
 header { margin-bottom: 48px; }
 
 .sig {
-display: flex; align-items: center; gap: 16px;
-font-family: ‘Space Mono’, monospace;
-font-size: 10px; color: var(–muted);
-letter-spacing: 0.15em; text-transform: uppercase;
-margin-bottom: 28px;
+  display: flex; align-items: center; gap: 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px; color: var(--muted);
+  letter-spacing: 0.15em; text-transform: uppercase;
+  margin-bottom: 28px;
 }
-.sig::after { content: ‘’; flex: 1; height: 1px; background: var(–border2); }
+.sig::after { content: ''; flex: 1; height: 1px; background: var(--border2); }
 
 h1 {
-font-size: clamp(28px, 4.5vw, 42px);
-font-weight: 600;
-letter-spacing: -0.02em;
-line-height: 1.1;
-margin-bottom: 10px;
+  font-size: clamp(28px, 4.5vw, 42px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 10px;
 }
-h1 em { font-style: normal; color: var(–muted); font-weight: 300; }
+h1 em { font-style: normal; color: var(--muted); font-weight: 300; }
 
-.desc { font-size: 14px; color: var(–muted); line-height: 1.6; font-weight: 300; max-width: 500px; }
+.desc { font-size: 14px; color: var(--muted); line-height: 1.6; font-weight: 300; max-width: 500px; }
 
 /* card */
 .card {
-background: var(–s1);
-border: 1px solid var(–border);
-border-radius: 12px;
-padding: 28px;
-margin-bottom: 16px;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 16px;
 }
 
 .card-label {
-font-family: ‘Space Mono’, monospace;
-font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
-color: var(–muted); margin-bottom: 24px;
-padding-bottom: 16px; border-bottom: 1px solid var(–border);
-display: flex; align-items: center; gap: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 24px;
+  padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
 }
-.card-label::before { content: ‘//’; color: var(–border2); }
+.card-label::before { content: '//'; color: var(--border2); }
 
 /* ── MODE SWITCHER ─────────────────────────────────────── */
 .mode-switcher {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 8px;
-margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 24px;
 }
 
 .mode-btn {
-background: var(–s2);
-border: 1px solid var(–border2);
-border-radius: 8px;
-padding: 12px 10px;
-cursor: pointer;
-text-align: center;
-transition: all 0.15s;
-display: flex; flex-direction: column; align-items: center; gap: 5px;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 12px 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
 }
-.mode-btn:hover { border-color: var(–silver); }
-.mode-btn.active-noapi  { border-color: var(–noapi);  background: rgba(167,139,250,0.08); }
-.mode-btn.active-gemini { border-color: var(–gemini); background: rgba(66,133,244,0.08); }
+.mode-btn:hover { border-color: var(--silver); }
+.mode-btn.active-noapi  { border-color: var(--noapi);  background: rgba(167,139,250,0.08); }
+.mode-btn.active-gemini { border-color: var(--gemini); background: rgba(66,133,244,0.08); }
 
 .mode-icon { font-size: 16px; }
 .mode-name {
-font-family: ‘Space Mono’, monospace;
-font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-color: var(–muted);
+  font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted);
 }
-.mode-btn.active-noapi  .mode-name { color: var(–noapi); }
-.mode-btn.active-gemini .mode-name { color: var(–gemini); }
+.mode-btn.active-noapi  .mode-name { color: var(--noapi); }
+.mode-btn.active-gemini .mode-name { color: var(--gemini); }
 
 .mode-tag {
-font-size: 8px; padding: 2px 6px; border-radius: 3px;
-font-family: ‘Space Mono’, monospace; letter-spacing: 0.05em;
+  font-size: 8px; padding: 2px 6px; border-radius: 3px;
+  font-family: 'Space Mono', monospace; letter-spacing: 0.05em;
 }
-.tag-free  { background: rgba(167,139,250,0.15); color: var(–noapi); }
-.tag-free2 { background: rgba(66,133,244,0.15);  color: var(–gemini); }
+.tag-free  { background: rgba(167,139,250,0.15); color: var(--noapi); }
+.tag-free2 { background: rgba(66,133,244,0.15);  color: var(--gemini); }
 
 /* mode descriptions */
 .mode-info {
-font-size: 12px; color: var(–muted); font-family: ‘Space Mono’, monospace;
-padding: 12px 14px; border-radius: 6px; margin-bottom: 20px;
-line-height: 1.6; display: none;
-border-left: 2px solid var(–border2);
+  font-size: 12px; color: var(--muted); font-family: 'Space Mono', monospace;
+  padding: 12px 14px; border-radius: 6px; margin-bottom: 20px;
+  line-height: 1.6; display: none;
+  border-left: 2px solid var(--border2);
 }
 .mode-info.visible { display: block; }
-.mode-info.info-noapi  { border-color: var(–noapi); }
-.mode-info.info-gemini { border-color: var(–gemini); }
+.mode-info.info-noapi  { border-color: var(--noapi); }
+.mode-info.info-gemini { border-color: var(--gemini); }
 
 /* api section */
 .api-section { display: none; }
@@ -138,84 +137,95 @@ border-left: 2px solid var(–border2);
 .field { display: flex; flex-direction: column; gap: 6px; }
 
 label {
-font-size: 10px; letter-spacing: 0.1em;
-color: var(–muted); text-transform: uppercase;
-font-family: ‘Space Mono’, monospace;
+  font-size: 10px; letter-spacing: 0.1em;
+  color: var(--muted); text-transform: uppercase;
+  font-family: 'Space Mono', monospace;
 }
 
 input, select {
-background: var(–s2);
-border: 1px solid var(–border2);
-border-radius: 6px;
-color: var(–text);
-font-family: ‘Space Grotesk’, sans-serif;
-font-size: 14px; font-weight: 300;
-padding: 10px 13px;
-outline: none;
-transition: border-color 0.15s;
-width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 300;
+  padding: 10px 13px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
 }
-input:focus, select:focus { border-color: var(–silver); }
-select option { background: #191919; }
-.hint { font-size: 11px; color: var(–border2); font-family: ‘Space Mono’, monospace; }
+input:focus, select:focus { border-color: var(--silver); }
+select option {
+  background: #2A2A2A;
+  color: #E5E5E5;
+  font-size: 14px;
+  padding: 8px;
+}
+select option:hover,
+select option:focus,
+select option:checked {
+  background: #3A3A4A;
+  color: #ffffff;
+}
+.hint { font-size: 11px; color: var(--border2); font-family: 'Space Mono', monospace; }
 
 /* checkboxes */
 .checks { display: flex; flex-wrap: wrap; gap: 18px; }
 .check-item {
-display: flex; align-items: center; gap: 8px;
-font-size: 13px; color: var(–muted); cursor: pointer;
-transition: color 0.15s; font-weight: 300;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--muted); cursor: pointer;
+  transition: color 0.15s; font-weight: 300;
 }
-.check-item:hover { color: var(–text); }
-.check-item input[type=checkbox] { width: 15px; height: 15px; accent-color: var(–silver); cursor: pointer; }
+.check-item:hover { color: var(--text); }
+.check-item input[type=checkbox] { width: 15px; height: 15px; accent-color: var(--silver); cursor: pointer; }
 
 /* api key row */
 .api-row { display: flex; gap: 8px; align-items: flex-end; }
 .api-row .field { flex: 1; }
 .eye-btn {
-background: var(–s2); border: 1px solid var(–border2);
-border-radius: 6px; color: var(–muted); cursor: pointer;
-width: 40px; height: 40px;
-display: flex; align-items: center; justify-content: center;
-font-size: 14px; flex-shrink: 0; transition: border-color 0.15s;
+  background: var(--s2); border: 1px solid var(--border2);
+  border-radius: 6px; color: var(--muted); cursor: pointer;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; transition: border-color 0.15s;
 }
-.eye-btn:hover { border-color: var(–silver); }
+.eye-btn:hover { border-color: var(--silver); }
 
 /* generate button */
 #generateBtn {
-width: 100%; padding: 14px;
-background: var(–text); color: var(–bg);
-border: none; border-radius: 8px;
-font-family: ‘Space Grotesk’, sans-serif;
-font-size: 13px; font-weight: 600;
-letter-spacing: 0.04em; cursor: pointer;
-transition: all 0.15s;
-display: flex; align-items: center; justify-content: center; gap: 10px;
-margin-top: 6px;
+  width: 100%; padding: 14px;
+  background: var(--text); color: var(--bg);
+  border: none; border-radius: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 0.04em; cursor: pointer;
+  transition: all 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-top: 6px;
 }
 #generateBtn:hover:not(:disabled) { background: #fff; transform: translateY(-1px); }
 #generateBtn:disabled { opacity: 0.35; cursor: not-allowed; }
-#generateBtn.mode-noapi  { background: var(–noapi);  color: #0A0A0A; }
-#generateBtn.mode-gemini { background: var(–gemini); color: #fff; }
+#generateBtn.mode-noapi  { background: var(--noapi);  color: #0A0A0A; }
+#generateBtn.mode-gemini { background: var(--gemini); color: #fff; }
 #generateBtn.mode-noapi:hover:not(:disabled)  { background: #C4B5FD; }
 #generateBtn.mode-gemini:hover:not(:disabled) { background: #6BA3F8; }
 
 .spinner {
-width: 14px; height: 14px;
-border: 1.5px solid rgba(0,0,0,0.2); border-top-color: currentColor;
-border-radius: 50%; animation: spin 0.7s linear infinite;
+  width: 14px; height: 14px;
+  border: 1.5px solid rgba(0,0,0,0.2); border-top-color: currentColor;
+  border-radius: 50%; animation: spin 0.7s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* status */
 #status {
-font-size: 12px; padding: 11px 14px; border-radius: 6px;
-margin-top: 14px; display: none; align-items: center; gap: 10px;
-font-family: ‘Space Mono’, monospace;
+  font-size: 12px; padding: 11px 14px; border-radius: 6px;
+  margin-top: 14px; display: none; align-items: center; gap: 10px;
+  font-family: 'Space Mono', monospace;
 }
-#status.info    { display: flex; background: #1A1A1A; color: var(–muted); }
-#status.success { display: flex; background: rgba(76,175,118,0.08); border: 1px solid rgba(76,175,118,0.2); color: var(–success); }
-#status.error   { display: flex; background: rgba(224,90,90,0.08); border: 1px solid rgba(224,90,90,0.2); color: var(–error); }
+#status.info    { display: flex; background: #1A1A1A; color: var(--muted); }
+#status.success { display: flex; background: rgba(76,175,118,0.08); border: 1px solid rgba(76,175,118,0.2); color: var(--success); }
+#status.error   { display: flex; background: rgba(224,90,90,0.08); border: 1px solid rgba(224,90,90,0.2); color: var(--error); }
 #status .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
 /* preview */
@@ -223,66 +233,65 @@ font-family: ‘Space Mono’, monospace;
 #preview-card.visible { display: block; }
 
 .preview-header {
-display: flex; align-items: center; justify-content: space-between;
-margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
 }
-.preview-meta { font-family: ‘Space Mono’, monospace; font-size: 11px; color: var(–muted); }
-.preview-meta strong { color: var(–silver); }
+.preview-meta { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
+.preview-meta strong { color: var(--silver); }
 
 .dl-btn {
-background: transparent; border: 1px solid var(–border2);
-color: var(–silver); border-radius: 6px;
-font-family: ‘Space Mono’, monospace; font-size: 10px;
-letter-spacing: 0.1em; padding: 8px 16px;
-cursor: pointer; transition: all 0.15s;
-display: flex; align-items: center; gap: 6px;
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--silver); border-radius: 6px;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  letter-spacing: 0.1em; padding: 8px 16px;
+  cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; gap: 6px;
 }
-.dl-btn:hover { border-color: var(–silver); color: var(–text); }
+.dl-btn:hover { border-color: var(--silver); color: var(--text); }
 
-.table-wrap { overflow-x: auto; border: 1px solid var(–border); border-radius: 8px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; }
 th {
-padding: 10px 13px; text-align: left; background: var(–s2);
-color: var(–silver); font-family: ‘Space Mono’, monospace;
-font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
-border-bottom: 1px solid var(–border); white-space: nowrap; font-weight: 400;
+  padding: 10px 13px; text-align: left; background: var(--s2);
+  color: var(--silver); font-family: 'Space Mono', monospace;
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  border-bottom: 1px solid var(--border); white-space: nowrap; font-weight: 400;
 }
 td {
-padding: 8px 13px; color: var(–muted);
-border-bottom: 1px solid var(–border); white-space: nowrap; font-weight: 300;
+  padding: 8px 13px; color: var(--muted);
+  border-bottom: 1px solid var(--border); white-space: nowrap; font-weight: 300;
 }
 tr:last-child td { border-bottom: none; }
-tr:hover td { color: var(–text); }
+tr:hover td { color: var(--text); }
 
 /* noapi limit warning */
 .limit-bar {
-display: flex; align-items: center; justify-content: space-between;
-font-family: ‘Space Mono’, monospace; font-size: 10px;
-color: var(–muted); margin-top: 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  color: var(--muted); margin-top: 10px;
 }
 .limit-track {
-flex: 1; height: 3px; background: var(–border2);
-border-radius: 2px; margin: 0 10px; overflow: hidden;
+  flex: 1; height: 3px; background: var(--border2);
+  border-radius: 2px; margin: 0 10px; overflow: hidden;
 }
 .limit-fill {
-height: 100%; border-radius: 2px;
-background: var(–noapi);
-transition: width 0.3s;
+  height: 100%; border-radius: 2px;
+  background: var(--noapi);
+  transition: width 0.3s;
 }
 
 footer {
-margin-top: 40px; text-align: center;
-font-family: ‘Space Mono’, monospace; font-size: 10px;
-color: var(–border2); line-height: 1.8;
+  margin-top: 40px; text-align: center;
+  font-family: 'Space Mono', monospace; font-size: 10px;
+  color: var(--border2); line-height: 1.8;
 }
 
 @media (max-width: 520px) {
-.grid { grid-template-columns: 1fr; }
-.full { grid-column: auto; }
-.mode-switcher { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: 1fr; }
+  .full { grid-column: auto; }
+  .mode-switcher { grid-template-columns: 1fr; }
 }
 </style>
-
 </head>
 <body>
 <div class="wrap">
@@ -296,115 +305,111 @@ color: var(–border2); line-height: 1.8;
   <div class="card">
     <p class="card-label">Mode de génération</p>
 
-```
-<!-- MODE SWITCHER -->
-<div class="mode-switcher">
-  <button class="mode-btn active-noapi" onclick="setMode('noapi')">
-    <span class="mode-icon">⚡</span>
-    <span class="mode-name">Sans API</span>
-    <span class="mode-tag tag-free">100% gratuit</span>
-  </button>
-  <button class="mode-btn" onclick="setMode('gemini')">
-    <span class="mode-icon">🔷</span>
-    <span class="mode-name">Gemini</span>
-    <span class="mode-tag tag-free2">clé gratuite</span>
-  </button>
-</div>
-
-<!-- MODE DESCRIPTIONS -->
-<div class="mode-info info-noapi visible" id="info-noapi">
-  // Génération locale, aucune API. Les données sont construites avec des templates métier prédéfinis. Limité à 500 lignes et 6 colonnes — idéal pour tester rapidement.
-</div>
-<div class="mode-info info-gemini" id="info-gemini">
-  // Gemini Flash 1.5 via l'API Google AI Studio. Clé API 100% gratuite sur <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gemini)">aistudio.google.com</a>. Données générées par IA, jusqu'à 2 000 lignes.
-</div>
-
-<!-- FORM -->
-<p class="card-label" style="margin-top:4px">Configuration</p>
-<div class="grid">
-  <div class="field">
-    <label>Secteur *</label>
-    <select id="secteur">
-      <option value="">— Choisir —</option>
-      <option>Banque / Finance</option>
-      <option>Télécom</option>
-      <option>Retail / E-commerce</option>
-      <option>Santé</option>
-      <option>Assurance</option>
-      <option>Jeux vidéo</option>
-      <option>Ressources humaines</option>
-      <option>Immobilier</option>
-      <option>Transport / Logistique</option>
-      <option>Marketing / CRM</option>
-      <option>Éducation</option>
-      <option>Énergie</option>
-    </select>
-  </div>
-  <div class="field">
-    <label>Thème</label>
-    <input type="text" id="theme" placeholder="mobile, churn…">
-  </div>
-  <div class="field">
-    <label>Colonnes</label>
-    <select id="colonnes">
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5" selected>5</option>
-      <option value="6">6</option>
-      <option value="7">7</option>
-      <option value="8">8</option>
-    </select>
-  </div>
-  <div class="field">
-    <label>Lignes *</label>
-    <input type="number" id="lignes" value="100" min="10" max="2000">
-    <span class="hint" id="lignes-hint">// max 500 en mode sans API</span>
-  </div>
-  <div class="field">
-    <label>Nom fichier</label>
-    <input type="text" id="nomFichier" placeholder="dataset_clients">
-  </div>
-  <div class="field">
-    <label>Séparateur</label>
-    <select id="sep">
-      <option value=",">, virgule</option>
-      <option value=";">; point-virgule</option>
-      <option value="\t">tabulation</option>
-    </select>
-  </div>
-  <div class="field full">
-    <label>Options</label>
-    <div class="checks">
-      <label class="check-item"><input type="checkbox" id="nulls" checked> Valeurs nulles (~3%)</label>
-      <label class="check-item"><input type="checkbox" id="doublons"> Doublons (~1%)</label>
-      <label class="check-item"><input type="checkbox" id="enHeader" checked> Headers anglais</label>
+    <!-- MODE SWITCHER -->
+    <div class="mode-switcher">
+      <button class="mode-btn active-noapi" onclick="setMode('noapi')">
+        <span class="mode-icon">⚡</span>
+        <span class="mode-name">Sans API</span>
+        <span class="mode-tag tag-free">100% gratuit</span>
+      </button>
+      <button class="mode-btn" onclick="setMode('gemini')">
+        <span class="mode-icon">🔷</span>
+        <span class="mode-name">Gemini</span>
+        <span class="mode-tag tag-free2">clé gratuite</span>
+      </button>
     </div>
-  </div>
 
-  <!-- GEMINI KEY -->
-  <div class="field full api-section" id="section-gemini">
-    <label>Clé API Google AI Studio</label>
-    <div class="api-row">
-      <div class="field" style="margin:0">
-        <input type="password" id="geminiKey" placeholder="AIza…">
+    <!-- MODE DESCRIPTIONS -->
+    <div class="mode-info info-noapi visible" id="info-noapi">
+      // Génération locale, aucune API. Les données sont construites avec des templates métier prédéfinis. Limité à 500 lignes et 6 colonnes — idéal pour tester rapidement.
+    </div>
+    <div class="mode-info info-gemini" id="info-gemini">
+      // Gemini Flash 1.5 via l'API Google AI Studio. Clé API 100% gratuite sur <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gemini)">aistudio.google.com</a>. Données générées par IA, jusqu'à 2 000 lignes.
+    </div>
+
+    <!-- FORM -->
+    <p class="card-label" style="margin-top:4px">Configuration</p>
+    <div class="grid">
+      <div class="field">
+        <label>Secteur *</label>
+        <select id="secteur">
+          <option value="">— Choisir —</option>
+          <option>Banque / Finance</option>
+          <option>Télécom</option>
+          <option>Retail / E-commerce</option>
+          <option>Santé</option>
+          <option>Assurance</option>
+          <option>Jeux vidéo</option>
+          <option>Ressources humaines</option>
+          <option>Immobilier</option>
+          <option>Transport / Logistique</option>
+          <option>Marketing / CRM</option>
+          <option>Éducation</option>
+          <option>Énergie</option>
+        </select>
       </div>
-      <button class="eye-btn" onclick="toggleKey('geminiKey')">👁</button>
+      <div class="field">
+        <label>Thème</label>
+        <input type="text" id="theme" placeholder="mobile, churn…">
+      </div>
+      <div class="field">
+        <label>Colonnes</label>
+        <select id="colonnes">
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5" selected>5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Lignes *</label>
+        <input type="number" id="lignes" value="100" min="10" max="2000">
+        <span class="hint" id="lignes-hint">// max 500 en mode sans API</span>
+      </div>
+      <div class="field">
+        <label>Nom fichier</label>
+        <input type="text" id="nomFichier" placeholder="dataset_clients">
+      </div>
+      <div class="field">
+        <label>Séparateur</label>
+        <select id="sep">
+          <option value=",">, virgule</option>
+          <option value=";">; point-virgule</option>
+          <option value="\t">tabulation</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label>Options</label>
+        <div class="checks">
+          <label class="check-item"><input type="checkbox" id="nulls" checked> Valeurs nulles (~3%)</label>
+          <label class="check-item"><input type="checkbox" id="doublons"> Doublons (~1%)</label>
+          <label class="check-item"><input type="checkbox" id="enHeader" checked> Headers anglais</label>
+        </div>
+      </div>
+
+      <!-- GEMINI KEY -->
+      <div class="field full api-section" id="section-gemini">
+        <label>Clé API Google AI Studio</label>
+        <div class="api-row">
+          <div class="field" style="margin:0">
+            <input type="password" id="geminiKey" placeholder="AIza…">
+          </div>
+          <button class="eye-btn" onclick="toggleKey('geminiKey')">👁</button>
+        </div>
+        <span class="hint">// gratuite sur aistudio.google.com — côté client uniquement</span>
+      </div>
     </div>
-    <span class="hint">// gratuite sur aistudio.google.com — côté client uniquement</span>
-  </div>
-</div>
 
-<br>
-<button id="generateBtn" class="mode-noapi" onclick="generate()">
-  <span id="btnText">⚡ Générer les données</span>
-</button>
-<div id="status"></div>
-```
-
+    <br>
+    <button id="generateBtn" class="mode-noapi" onclick="generate()">
+      <span id="btnText">⚡ Générer les données</span>
+    </button>
+    <div id="status"></div>
   </div>
 
   <!-- PREVIEW -->
-
   <div class="card" id="preview-card">
     <div class="preview-header">
       <p class="preview-meta"><strong id="pm-name"></strong><span id="pm-info"></span></p>
@@ -943,8 +948,15 @@ async function generate() {
 ══════════════════════════════════════════════════════════════ */
 function downloadCSV() {
   if (!csvContent) return;
-  const nom  = document.getElementById('nomFichier').value.trim() || 'dataset';
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const nom     = document.getElementById('nomFichier').value.trim() || 'dataset';
+  const sep     = document.getElementById('sep').value;
+  const sepChar = sep === '\\t' ? '\t' : sep;
+
+  // Ajoute la déclaration de séparateur pour Excel
+  // Excel lit "sep=X" en première ligne et sépare automatiquement les colonnes
+  const sepDecl = sep === '\\t' ? '' : `sep=${sepChar}\n`;
+  const blob = new Blob([sepDecl + csvContent], { type: 'text/csv;charset=utf-8;' });
+
   const a    = document.createElement('a');
   a.href     = URL.createObjectURL(blob);
   a.download = nom + '.csv';
@@ -952,6 +964,5 @@ function downloadCSV() {
   URL.revokeObjectURL(a.href);
 }
 </script>
-
 </body>
 </html>
