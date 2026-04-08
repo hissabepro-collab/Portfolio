@@ -93,8 +93,28 @@
         .filters { display: flex; gap: .5rem; flex-wrap: wrap; align-self: flex-end; }
         .filter-btn { padding: .5rem 1.2rem; border: 1px solid var(--border); background: transparent; border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: .8rem; font-weight: 500; letter-spacing: .05em; color: var(--muted); cursor: pointer; transition: all .2s; }
         .filter-btn.active, .filter-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-        .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-        .project-card { background: white; padding: 2.5rem; transition: background .2s; display: flex; flex-direction: column; }
+
+        /* ─── GRILLE PROJETS ────────────────────────────────────────────────────
+           CSS columns : 3 colonnes indépendantes. Chaque carte prend sa hauteur
+           naturelle sans impacter les cartes voisines d'une autre colonne.
+        ──────────────────────────────────────────────────────────────────────── */
+        .projects-grid {
+            column-count: 3;
+            column-gap: 1px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .project-card {
+            break-inside: avoid;          /* empêche une carte d'être coupée entre deux colonnes */
+            background: white;
+            padding: 2.5rem;
+            transition: background .2s;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid var(--border);
+        }
         .project-card:hover { background: var(--cream); }
         .project-cat { font-size: .7rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.25rem; }
         .project-title { font-family: 'DM Serif Display', serif; font-size: 1.25rem; line-height: 1.25; margin-bottom: 1rem; color: var(--ink); }
@@ -106,18 +126,33 @@
         .project-link.code { background: var(--ink); color: var(--paper); border-color: var(--ink); }
         .project-link.code:hover { background: var(--accent2); border-color: var(--accent2); }
         .project-link.demo { background: var(--accent); color: white; border-color: var(--accent); }
-		.project-link.demo-live {
-    background: #10b981;
-    border-color: #10b981;
-    color: white;
-}
-
-.project-link.demo-live:hover {
-    background: #059669;
-}
+        .project-link.demo-live { background: #10b981; border-color: #10b981; color: white; }
+        .project-link.demo-live:hover { background: #059669; }
         .project-link.demo:hover { opacity: .85; }
-	.project-link.demo-sphinx { background: #6b2d8b; border-color: #6b2d8b; }
-	.project-link.demo-sphinx:hover { background: #55226e; border-color: #55226e; opacity: 1; }
+        .project-link.demo-sphinx { background: #6b2d8b; border-color: #6b2d8b; }
+        .project-link.demo-sphinx:hover { background: #55226e; border-color: #55226e; opacity: 1; }
+
+        /* ─── VIDÉO ─────────────────────────────────────────────────────────────
+           Taille réduite et compacte — ratio 16:9 préservé.
+           N'impacte que la carte qui la contient.
+        ──────────────────────────────────────────────────────────────────────── */
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 52%;   /* légèrement moins haut que le 16:9 pur */
+            height: 0;
+            overflow: hidden;
+            border-radius: 4px;
+            margin-bottom: 1.25rem;
+            border: 1px solid var(--border);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
 
         /* CONTACT */
         .contact { padding: 8rem 4rem; background: var(--ink); color: var(--paper); display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center; }
@@ -144,7 +179,7 @@
             .skills-row { grid-template-columns: repeat(2, 1fr); }
             .tools-band { padding: 2rem; flex-direction: column; gap: 1.5rem; }
             .projects { padding: 5rem 2rem; }
-            .projects-grid { grid-template-columns: 1fr; }
+            .projects-grid { column-count: 1; }
             .contact { grid-template-columns: 1fr; padding: 5rem 2rem; gap: 3rem; }
         }
     </style>
@@ -248,7 +283,8 @@
     <div class="contact-right">
         <div class="contact-item">
             <i class="fas fa-envelope"></i>
-<div><h4>Email</h4><a href="mailto:hissabe.pro@gmail.com">hissabe.pro@gmail.com</a></div></div>
+            <div><h4>Email</h4><a href="mailto:hissabe.pro@gmail.com">hissabe.pro@gmail.com</a></div>
+        </div>
         <div class="contact-item">
             <i class="fab fa-linkedin"></i>
             <div><h4>LinkedIn</h4><a href="https://www.linkedin.com/public-profile/settings?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_self_edit_contact-info%3Bod6hRXs%2BSGS2sf5OkrZk0g%3D%3D" target="_blank">linkedin.com/in/hissa-berton</a></div>
@@ -322,7 +358,7 @@ const projects = [
         title: "Dashboard de pilotage commercial — Supply Chain - SportWorld",
         cat: "viz",
         catLabel: "Data Visualisation",
-        desc: "57 % des commandes livrées en retard sur 66 000 transactions : identification d’une défaillance structurelle logistique via un dashboard Power BI multi-vues. Modélisation en étoile, création de KPI stratégiques (CA, marge, retards, annulations) et restitution orientée décision pour prioriser marchés et catégories.",
+        desc: "57 % des commandes livrées en retard sur 66 000 transactions : identification d'une défaillance structurelle logistique via un dashboard Power BI multi-vues. Modélisation en étoile, création de KPI stratégiques (CA, marge, retards, annulations) et restitution orientée décision pour prioriser marchés et catégories.",
         tags: ["Power BI", "Data Modeling", "KPI", "Supply Chain", "Data Analytics"],
         github: "https://d.dataviv.net/r/kvWxtYJylS",
         demo: "https://github.com/hissabepro-collab/Portfolio/blob/main/pdf/Dashboard_PowerBI_SportWorld.pdf"
@@ -410,9 +446,7 @@ function renderProjects(filter) {
                </a>`
             : '';
 
-        // AJOUT VIDEO STRICT (aucun impact ailleurs)
         let videoBlock = '';
-
         if (p.id === 5) {
             videoBlock = `
                 <div class="video-container">
@@ -420,7 +454,6 @@ function renderProjects(filter) {
                 </div>
             `;
         }
-
         if (p.id === 8) {
             videoBlock = `
                 <div class="video-container">
@@ -433,9 +466,7 @@ function renderProjects(filter) {
             <div class="project-card">
                 <p class="project-cat">${p.catLabel}</p>
                 <h3 class="project-title">${p.title}</h3>
-
                 ${videoBlock}
-
                 <p class="project-desc">${p.desc}</p>
                 <div class="project-tags">
                     ${p.tags.map(t => `<span class="project-tag">${t}</span>`).join('')}
@@ -451,10 +482,7 @@ function renderProjects(filter) {
 // FILTERS
 document.getElementById('filters').addEventListener('click', e => {
     if (!e.target.matches('.filter-btn')) return;
-
-    document.querySelectorAll('.filter-btn')
-        .forEach(b => b.classList.remove('active'));
-
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
     renderProjects(e.target.dataset.filter);
 });
@@ -466,4 +494,6 @@ document.getElementById('hamburger').addEventListener('click', () => {
 
 // INIT
 renderProjects('all');
-</script> 
+</script>
+</body>
+</html>
