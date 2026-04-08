@@ -1,0 +1,525 @@
+{
+  "name": "Suivi candidatures stable",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "sender": ""
+        },
+        "options": {}
+      },
+      "id": "fdb19bba-0064-4211-b53d-6ea1ea9c1098",
+      "name": "Gmail — Surveiller emails",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [
+        608,
+        48
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "VOTRE_CREDENTIAL_GMAIL_ID",
+          "name": "Votre compte Gmail"
+        }
+      },
+      "notes": "Surveille ta boîte Gmail pour détecter les emails de confirmation de candidatures LinkedIn, Indeed, WTTJ, Apec, Cadremploi, RegionsJob, Hellowork, Jobteaser, Glassdoor"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "linkedin"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "indeed"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "welcometothejungle"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "wttj"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "apec"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "cadremploi"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "regionsjob"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "hellowork"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "jobteaser"
+            },
+            {
+              "value1": "={{ $json.Depuis }}",
+              "operation": "contains",
+              "value2": "glassdoor"
+            },
+            {
+              "value1": "={{ $json.Sujet }}",
+              "operation": "contains",
+              "value2": "candidature"
+            },
+            {
+              "value1": "={{ $json.Sujet }}",
+              "operation": "contains",
+              "value2": "application"
+            },
+            {
+              "value1": "={{ $json.Sujet }}",
+              "operation": "contains",
+              "value2": "vous avez postulé"
+            },
+            {
+              "value1": "={{ $json.Sujet }}",
+              "operation": "contains",
+              "value2": "you applied"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "ee20b99b-e20b-4b76-9f82-497625728844",
+      "name": "Filtrer — Plateformes emploi",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        864,
+        48
+      ],
+      "notes": "Vérifie que l'email vient bien d'une plateforme d'emploi connue — toutes les 9 plateformes + mots-clés subject"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\n// Fonction robuste pour convertir n'importe quoi en string\nfunction getStr(v) {\n  if (v === null || v === undefined) return '';\n  if (typeof v === 'string') return v;\n  if (typeof v === 'number' || typeof v === 'boolean') return String(v);\n  if (Array.isArray(v)) { var r = ''; for (var i=0;i<v.length;i++) { var s=getStr(v[i]); if(s) r+=s+' '; } return r.trim(); }\n  if (typeof v === 'object') {\n    var keys=['value','text','name','email','data','body','snippet','content'];\n    for (var i=0;i<keys.length;i++) { if(v[keys[i]] && typeof v[keys[i]]==='string' && v[keys[i]].length>0) return v[keys[i]]; }\n    var vals=Object.values(v);\n    for (var i=0;i<vals.length;i++) { if(typeof vals[i]==='string' && vals[i].length>5) return vals[i]; }\n  }\n  return '';\n}\n\n// Récupérer le sujet - compatible Simplifier ON et OFF\nconst subjectOrig = getStr(item.Sujet || item.sujet || item.subject || '');\nconst subject = subjectOrig.toLowerCase();\n\n// Récupérer l'expéditeur\nconst from = getStr(item.Depuis || item.depuis || item.from || '').toLowerCase();\n\n// Récupérer la date\nconst dateRaw = item.internalDate || item['date interne'] || item['Date interne'] || item.date || '';\nlet date;\nif (!dateRaw) {\n  date = new Date();\n} else if (typeof dateRaw === 'number') {\n  date = new Date(dateRaw);\n} else {\n  const parsed = parseInt(dateRaw);\n  if (parsed && parsed > 1000000000000) {\n    date = new Date(parsed);\n  } else {\n    date = new Date(dateRaw);\n    if (isNaN(date.getTime())) date = new Date();\n  }\n}\n\n// Récupérer le corps de l'email\nfunction getBody(obj) {\n  if (!obj) return '';\n  if (typeof obj === 'string') return obj;\n  if (typeof obj === 'object' && !Array.isArray(obj)) {\n    if (obj.text && typeof obj.text === 'string') return obj.text;\n    if (obj.html && typeof obj.html === 'string') return obj.html;\n    if (obj.data && typeof obj.data === 'string') return obj.data;\n    if (obj.body && typeof obj.body === 'string') return obj.body;\n    for (const k of Object.keys(obj)) {\n      if (typeof obj[k] === 'string' && obj[k].length > 50) return obj[k];\n    }\n  }\n  return '';\n}\n\nconst bodyRaw = String(\n  item.extrait || item.fragment ||\n  getBody(item['charge utile']) ||\n  item.text || item.html || item.snippet || ''\n);\n\n// Nettoyer le body\nconst bodyOrig = bodyRaw.replace(/^[\\s\\u2022\\-\\*]+/gm, '').replace(/\\r\\n/g, '\\n').replace(/\\r/g, '\\n');\nconst body = bodyOrig.toLowerCase();\n\n// PLATEFORME\nlet plateforme = 'Autre';\nif (from.includes('linkedin') || subject.includes('linkedin')) plateforme = 'LinkedIn';\nelse if (from.includes('indeed') || subject.includes('indeed')) plateforme = 'Indeed';\nelse if (from.includes('welcometothejungle') || from.includes('wttj')) plateforme = 'Welcome to the Jungle';\nelse if (from.includes('apec') || subject.includes('apec')) plateforme = 'Apec';\nelse if (from.includes('cadremploi')) plateforme = 'Cadremploi';\nelse if (from.includes('regionsjob')) plateforme = 'RegionsJob';\nelse if (from.includes('hellowork')) plateforme = 'Hellowork';\nelse if (from.includes('jobteaser')) plateforme = 'Jobteaser';\nelse if (from.includes('glassdoor')) plateforme = 'Glassdoor';\n\n// CHERCHER APRES UN MARQUEUR\nfunction findAfter(src, markers, stops, maxLen) {\n  if (!src) return '';\n  const t = src.toLowerCase().replace(/\\s+/g, ' ');\n  const orig = src.replace(/\\s+/g, ' ');\n  for (let mi = 0; mi < markers.length; mi++) {\n    const m = markers[mi].toLowerCase();\n    const idx = t.indexOf(m);\n    if (idx === -1) continue;\n    if (m.trim().length <= 3 && m.trim() === m) {\n      const cb = idx > 0 ? t[idx-1] : ' ';\n      if (cb !== ' ' && cb !== '\\n' && cb !== '\\t') continue;\n    }\n    const start = idx + m.length;\n    let end = orig.length;\n    const allStops = (stops || []).concat(['\\n']);\n    for (let si = 0; si < allStops.length; si++) {\n      const sIdx = t.indexOf(allStops[si].toLowerCase(), start);\n      if (sIdx > start && sIdx - start < (maxLen || 80) && sIdx < end) end = sIdx;\n    }\n    const val = orig.substring(start, end).trim().replace(/^[\\s:\\u2013\\-\\u2022]+/, '').trim();\n    if (val && val.length > 1) return val;\n  }\n  return '';\n}\n\n// ENTREPRISE\nlet entreprise = findAfter(bodyOrig, [' chez ', ' at '], [',', '.', '!', '\\n', ' basée', ' basé', ' à ', ' pour ', ' (', ' –', ' -'], 40);\nif (!entreprise) entreprise = findAfter(bodyOrig, ['entreprise', 'société', 'employeur', 'company'], ['\\n', ',', '.'], 40);\nif (!entreprise) {\n  const parts = subjectOrig.split(/\\s*[–—]\\s*/);\n  for (let i = 0; i < parts.length; i++) {\n    const c = parts[i].trim().replace(/^(votre candidature|candidature|application|confirmation)\\s*/i, '').trim();\n    const isPoste = /analyst|manager|engineer|developer|consultant|assistant|chef|directeur|data|crm|business|marketing/i.test(c);\n    const isVille = /^(paris|lyon|toulouse|bordeaux|nantes|lille|nice|strasbourg|montpellier|rennes|grenoble|la défense|nancy|metz)$/i.test(c.trim());\n    if (c.length > 2 && !isPoste && !isVille && c === parts[i].trim()) { entreprise = c; break; }\n  }\n}\nif (!entreprise) {\n  const parts = subjectOrig.split(/\\s*-\\s*/);\n  if (parts.length >= 3) {\n    const last = parts[parts.length-1].trim();\n    const mots = last.split(' ').filter(function(m) { return m.length > 0; });\n    entreprise = mots.length > 2 ? mots.slice(0,-1).join(' ') : last;\n  }\n}\n\n// POSTE\nlet poste = findAfter(bodyOrig, ['intitulé', 'intitule', 'poste', 'titre du poste', 'pour le poste de', \"pour le poste d'\", 'au poste de', 'pour un stage', 'au stage', 'for the position of', 'applied for'], ['\\n', '(', ',', ' chez ', ' basé', ' –', ' -', ' lieu', ' localisation', ' type de', ' salaire'], 70);\nif (!poste || poste.toLowerCase() === 'candidature') {\n  const parts = subjectOrig.split(/\\s*[–—-]\\s*/);\n  for (let i = 0; i < parts.length; i++) {\n    const c = parts[i].trim().replace(/^(votre candidature|candidature|application|confirmation)\\s*/i, '').trim();\n    const isPoste = /analyst|manager|engineer|developer|consultant|assistant|data|crm|business|marketing|commercial/i.test(c);\n    if (c.length > 2 && isPoste) { poste = c; break; }\n  }\n}\nif (!poste || poste.toLowerCase() === 'candidature') {\n  poste = findAfter(subjectOrig, ['pour le poste de ', \"pour le poste d'\", 'au poste de ', 'applied for ', 'pour un stage '], [' chez ', ' at ', ' –', ' -', ',', '('], 70);\n}\nif (poste) poste = poste.replace(/\\s*\\(h\\/f\\)\\s*/i, '').replace(/\\s*h\\/f\\s*/i, '').trim();\n\n// VILLE\nlet ville = findAfter(bodyOrig, ['localisation', 'location', 'lieu', 'ville', 'basée à', 'basé à', 'située à', 'situé à'], ['\\n', '(', ',', '.', '–', '-', ' a été', ' est'], 35);\nif (ville) ville = ville.replace(/\\s*\\(?\\d{2,5}\\)?\\s*$/, '').trim();\nif (!ville) {\n  const m = bodyOrig.match(/(?:à|basée?\\s+à|située?\\s+à)\\s+([A-ZÀ-Ÿ][a-zA-ZÀ-ÿ\\s\\-]{2,25}?)(?:\\s*[\\(\\.,\\n]|\\s+\\d|\\s+a\\s+été)/);\n  if (m) ville = m[1].trim().replace(/\\s*\\(\\d+\\)\\s*$/, '').trim();\n}\n\n// SALAIRE\nlet salaire = '';\nconst sPatterns = [\n  /(\\d[\\d\\s.,]*\\d\\s*€\\s*[–—\\-\\/]\\s*\\d[\\d\\s.,]*\\d\\s*€)/i,\n  /(\\d[\\d\\s.,]*\\d\\s*k\\s*€\\s*[–—\\-\\/]\\s*\\d[\\d\\s.,]*\\d\\s*k\\s*€)/i,\n  /(\\d[\\d\\s.,]*\\d\\s*€\\s*(?:brut|net|\\/\\s*(?:mois|an))?)/i,\n  /(\\d[\\d\\s.,]*\\d\\s*k\\s*€)/i\n];\nfor (let i = 0; i < sPatterns.length; i++) {\n  const m = bodyOrig.match(sPatterns[i]);\n  if (m) { salaire = m[0].trim().replace(/\\s+/g, ' '); break; }\n}\nif (!salaire) salaire = findAfter(bodyOrig, ['rémunération', 'remuneration', 'salaire', 'salary', 'gratification'], ['\\n', '(selon', 'brut annuel'], 60);\n\n// CONTRAT\nlet typeContrat = '';\nconst contratBrut = findAfter(bodyOrig, ['type de contrat', 'contrat', 'contract type', 'nature du contrat'], ['\\n', ',', '.', '('], 30);\nif (contratBrut) {\n  const cb = contratBrut.toLowerCase();\n  if (cb.includes('cdi')) typeContrat = 'CDI';\n  else if (cb.includes('cdd')) typeContrat = 'CDD';\n  else if (cb.includes('alternance') || cb.includes('apprentissage')) typeContrat = 'Alternance';\n  else if (cb.includes('stage')) typeContrat = 'Stage';\n  else if (cb.includes('freelance')) typeContrat = 'Freelance';\n  else if (cb.includes('intérim') || cb.includes('interim')) typeContrat = 'Intérim';\n  else typeContrat = contratBrut.trim();\n}\nif (!typeContrat) {\n  const full = body + ' ' + subject;\n  if (full.includes('cdi')) typeContrat = 'CDI';\n  else if (full.includes('cdd')) typeContrat = 'CDD';\n  else if (full.includes('alternance') || full.includes('apprentissage')) typeContrat = 'Alternance';\n  else if (full.includes('stage')) typeContrat = 'Stage';\n  else if (full.includes('freelance')) typeContrat = 'Freelance';\n  else if (full.includes('intérim') || full.includes('interim')) typeContrat = 'Intérim';\n}\n\n// LIEN\nlet lienOffre = '';\nconst domains = ['linkedin.com/jobs','indeed.com','welcometothejungle.com','apec.fr','cadremploi.fr','regionsjob.com','hellowork.com','jobteaser.com','glassdoor.fr'];\nfor (let i = 0; i < domains.length; i++) {\n  const di = body.indexOf(domains[i]);\n  if (di > -1) {\n    const hs = body.lastIndexOf('http', di);\n    if (hs > -1) { let he = body.indexOf(' ', di); if (he === -1) he = body.length; lienOffre = bodyOrig.substring(hs, he).trim(); break; }\n  }\n}\n\n// CONTACTS\nconst emailReg = /[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}/g;\nconst noR = ['noreply','no-reply','notification','donotreply','linkedin','indeed','welcometothejungle','apec','cadremploi','hellowork','jobteaser','glassdoor'];\nconst allEmails = bodyOrig.match(emailReg) || [];\nconst contactEmails = allEmails.filter(function(e) {\n  for (let i = 0; i < noR.length; i++) { if (e.toLowerCase().includes(noR[i])) return false; }\n  return true;\n});\nlet rhPrenom = '', rhNom = '', rhEmail = '';\nlet autrePrenom = '', autreNom = '', autreRole = '', autreEmail = '';\nconst nomRH = findAfter(bodyOrig, ['votre contact recruteur', 'contact recruteur', 'contact rh', 'recruteur', 'recruiter', 'votre contact'], ['\\n', '<', '|', '(', '@', ' email', ' Email', 'email :'], 40);\nif (nomRH) {\n  const parts = nomRH.trim().split(/\\s+/).filter(function(p) { return p.length > 0; });\n  if (parts.length >= 2) { rhPrenom = parts[0]; rhNom = parts.slice(1).join(' '); }\n  else if (parts.length === 1) { rhNom = parts[0]; }\n}\nif (contactEmails.length > 0) rhEmail = contactEmails[0];\nif (contactEmails.length > 1) autreEmail = contactEmails[1];\n\n// SECTEUR\n// 1. Marqueurs dans le body\nlet secteur = findAfter(bodyOrig, ['secteur', 'domaine', 'industrie', 'sector', 'industry', 'domaine d activité', \"domaine d'activité\"], ['\\n', ',', '.', '(', ' votre', ' nous', ' le poste', ' contact'], 35);\n\n// 2. Détection par mots-clés dans le body+sujet\nif (!secteur) {\n  const fullText = (body + ' ' + subject + ' ' + from);\n  const secteurMap = [\n    [['banque', 'finance', 'assurance', 'crédit', 'bnp', 'société générale', 'lcl', 'crédit agricole', 'axa', 'allianz'], 'Finance / Banque'],\n    [['retail', 'distribution', 'magasin', 'enseigne', 'decathlon', 'leroy merlin', 'fnac', 'carrefour', 'auchan', 'leclerc'], 'Retail / Distribution'],\n    [['télécom', 'telecom', 'orange', 'sfr', 'bouygues', 'free', 'iliad'], 'Télécommunications'],\n    [['logistique', 'transport', 'supply chain', 'livraison', 'fedex', 'dhl', 'ups', 'geodis'], 'Logistique / Transport'],\n    [['santé', 'médical', 'pharma', 'hôpital', 'clinique', 'sanofi', 'servier', 'roche'], 'Santé / Pharma'],\n    [['conseil', 'consulting', 'capgemini', 'accenture', 'mckinsey', 'deloitte', 'kpmg', 'pwc', 'bcg'], 'Conseil / Consulting'],\n    [['tech', 'informatique', 'logiciel', 'software', 'saas', 'cloud', 'data', 'ia ', 'intelligence artificielle'], 'Tech / Informatique'],\n    [['industrie', 'manufacture', 'usine', 'production', 'airbus', 'safran', 'michelin', 'saint-gobain'], 'Industrie / Manufacturing'],\n    [['energie', 'énergie', 'edf', 'engie', 'total', 'renouvelable', 'solaire'], 'Énergie'],\n    [['luxe', 'mode', 'lvmh', 'hermes', 'chanel', 'dior', 'kering'], 'Luxe / Mode'],\n    [['media', 'presse', 'publicité', 'communication', 'marketing'], 'Médias / Communication'],\n    [['immobilier', 'promoteur', 'construction', 'btp', 'vinci', 'bouygues construction'], 'Immobilier / BTP'],\n    [['alimentaire', 'agroalimentaire', 'danone', 'nestle', 'lactalis', 'bonduelle'], 'Agroalimentaire'],\n    [['sport', 'loisir', 'decathlon', 'adidas', 'nike', 'intersport'], 'Sport / Loisirs'],\n    [['education', 'formation', 'enseignement', 'université', 'école'], 'Éducation / Formation'],\n    [['public', 'administration', 'collectivité', 'mairie', 'ministère'], 'Secteur Public']\n  ];\n  for (let i = 0; i < secteurMap.length; i++) {\n    const keywords = secteurMap[i][0];\n    for (let j = 0; j < keywords.length; j++) {\n      if (fullText.includes(keywords[j])) { secteur = secteurMap[i][1]; break; }\n    }\n    if (secteur) break;\n  }\n}\n\n// DATES\n\nconst dateFormatee = date.toLocaleDateString('fr-FR');\nconst relanceDate = new Date(date.getTime());\nrelanceDate.setDate(relanceDate.getDate() + 7);\nconst relanceFormatee = relanceDate.toLocaleDateString('fr-FR');\nconst aucunContact = !rhEmail && !rhPrenom && !autreEmail && !autrePrenom;\n\nreturn {\n  date: dateFormatee,\n  entreprise: entreprise || '— A completer',\n  poste: (poste && poste.toLowerCase() !== 'candidature' && poste.toLowerCase() !== 'confirmation' && poste.length > 2) ? poste : '— A completer',\n  plateforme: plateforme,\n  typeContrat: typeContrat || '— A completer',\n  ville: ville || '— A completer',\n  salaire: salaire || '— A completer',\n  secteur: secteur || '— A completer',\n  statut: 'Envoyee',\n  relance: relanceFormatee,\n  rhPrenom: rhPrenom || '— A completer',\n  rhNom: rhNom || '— A completer',\n  rhEmail: rhEmail || '— A completer',\n  autrePrenom: autrePrenom || '— A completer',\n  autreNom: autreNom || '— A completer',\n  autreRole: autreRole || '— A completer',\n  autreEmail: autreEmail || '— A completer',\n  lienOffre: lienOffre || '— A completer',\n  notes: '',\n  aucunContact: aucunContact\n};\n"
+      },
+      "id": "1d70b9ba-bfa2-47cb-bb71-6e990b1117cf",
+      "name": "Extraire — Données candidature",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "VOTRE_GOOGLE_SHEET_ID"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Candidatures"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Entreprise": "={{ $json.entreprise }}",
+            "Poste": "={{ $json.poste }}",
+            "Plateforme": "={{ $json.plateforme }}",
+            "Type de contrat": "={{ $json.typeContrat }}",
+            "Ville": "={{ $json.ville }}",
+            "Secteur": "={{ $json.secteur }}",
+            "Relance prévue": "={{ $json.relance }}",
+            "Contact RH — Nom": "={{ $json.rhNom }}",
+            "Contact RH — Email": "={{ $json.rhEmail }}",
+            "Contact Autre — Prénom": "={{ $json.autrePrenom }}",
+            "Contact Autre — Nom": "={{ $json.autreNom }}",
+            "Contact Autre — Rôle": "={{ $json.autreRole }}",
+            "Contact Autre — Email": "={{ $json.autreEmail }}",
+            "Lien offre": "={{ $json.lienOffre }}",
+            "Notes": "={{ $json.notes }}",
+            "Salaire ": "={{ $json.salaire }}",
+            "Statut ": "={{ $json.statut }}",
+            "Contact RH - Prénom": "={{ $json.rhPrenom }}",
+            "Date ": "={{ $json.date }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date ",
+              "displayName": "Date ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Entreprise",
+              "displayName": "Entreprise",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Poste",
+              "displayName": "Poste",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Plateforme",
+              "displayName": "Plateforme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type de contrat",
+              "displayName": "Type de contrat",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ville",
+              "displayName": "Ville",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Salaire ",
+              "displayName": "Salaire ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Secteur",
+              "displayName": "Secteur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Statut ",
+              "displayName": "Statut ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Relance prévue",
+              "displayName": "Relance prévue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact RH - Prénom",
+              "displayName": "Contact RH - Prénom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Contact RH — Nom",
+              "displayName": "Contact RH — Nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact RH — Email",
+              "displayName": "Contact RH — Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact Autre — Prénom",
+              "displayName": "Contact Autre — Prénom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact Autre — Nom",
+              "displayName": "Contact Autre — Nom",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact Autre — Rôle",
+              "displayName": "Contact Autre — Rôle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Contact Autre — Email",
+              "displayName": "Contact Autre — Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lien offre",
+              "displayName": "Lien offre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Colonne 1",
+              "displayName": "Colonne 1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Colonne 2",
+              "displayName": "Colonne 2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Colonne 3",
+              "displayName": "Colonne 3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Colonne 4",
+              "displayName": "Colonne 4",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Colonne 5",
+              "displayName": "Colonne 5",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Colonne 6",
+              "displayName": "Colonne 6",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Colonne 7",
+              "displayName": "Colonne 7",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "85b96b9c-5db4-4465-a58f-64d1f8071e0a",
+      "name": "Google Sheets — Ajouter ligne",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1360,
+        48
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VOTRE_CREDENTIAL_SHEETS_ID",
+          "name": "Votre compte Google Sheets"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "VOTRE_TELEGRAM_CHAT_ID",
+        "text": "=✅ *Candidature enregistrée !*\n\n🏢 *Entreprise :* {{ $(\"Extraire — Données candidature\").first().json.entreprise }}\n💼 *Poste :* {{ $(\"Extraire — Données candidature\").first().json.poste }}\n🌐 *Plateforme :* {{ $(\"Extraire — Données candidature\").first().json.plateforme }}\n📅 *Date :* {{ $(\"Extraire — Données candidature\").first().json.date }}\n📍 *Ville :* {{ $(\"Extraire — Données candidature\").first().json.ville }}\n📋 *Contrat :* {{ $(\"Extraire — Données candidature\").first().json.typeContrat }}\n💰 *Salaire :* {{ $(\"Extraire — Données candidature\").first().json.salaire }}\n🔔 *Relance prévue :* {{ $(\"Extraire — Données candidature\").first().json.relance }}\n\n👤 *Contact RH :* {{ $(\"Extraire — Données candidature\").first().json.rhPrenom }} {{ $(\"Extraire — Données candidature\").first().json.rhNom }}\n📧 *Email RH :* {{ $(\"Extraire — Données candidature\").first().json.rhEmail }}\n\n👤 *Contact Autre :* {{ $(\"Extraire — Données candidature\").first().json.autrePrenom }} {{ $(\"Extraire — Données candidature\").first().json.autreNom }}\n🎯 *Rôle :* {{ $(\"Extraire — Données candidature\").first().json.autreRole }}\n📧 *Email Autre :* {{ $(\"Extraire — Données candidature\").first().json.autreEmail }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "928b9546-b285-4bf1-9800-06a79e8afec5",
+      "name": "Telegram — Confirmation simple",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        224
+      ],
+      "webhookId": "ac1a7523-d344-4ef7-9592-511e7567dd68",
+      "credentials": {
+        "telegramApi": {
+          "id": "VOTRE_CREDENTIAL_TELEGRAM_ID",
+          "name": "Votre compte Telegram"
+        }
+      },
+      "notes": "Envoyé quand au moins un contact a été trouvé"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail — Surveiller emails": {
+      "main": [
+        [
+          {
+            "node": "Filtrer — Plateformes emploi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrer — Plateformes emploi": {
+      "main": [
+        [
+          {
+            "node": "Extraire — Données candidature",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraire — Données candidature": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets — Ajouter ligne",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets — Ajouter ligne": {
+      "main": [
+        [
+          {
+            "node": "Telegram — Confirmation simple",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c1a94574-3113-478c-99c4-0a07cc6ef54e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "VOTRE_INSTANCE_ID"
+  },
+  "id": "zQ1lmrldTHZXWrCr",
+  "tags": []
+}
