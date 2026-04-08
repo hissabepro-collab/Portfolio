@@ -95,26 +95,25 @@
         .filter-btn.active, .filter-btn:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
         /* ─── GRILLE PROJETS ────────────────────────────────────────────────────
-           On passe en auto-rows pour que chaque ligne s'adapte à son contenu.
-           Les cartes s'étirent à 100% de la cellule grâce à align-items: stretch.
+           CSS columns : 3 colonnes indépendantes. Chaque carte prend sa hauteur
+           naturelle sans impacter les cartes voisines d'une autre colonne.
         ──────────────────────────────────────────────────────────────────────── */
         .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
+            column-count: 3;
+            column-gap: 1px;
             border: 1px solid var(--border);
             border-radius: 4px;
             overflow: hidden;
-            align-items: start; /* chaque cellule prend sa hauteur naturelle */
         }
 
         .project-card {
+            break-inside: avoid;          /* empêche une carte d'être coupée entre deux colonnes */
             background: white;
             padding: 2.5rem;
             transition: background .2s;
             display: flex;
             flex-direction: column;
-            height: 100%; /* s'étire pour remplir sa cellule de grille */
+            border-bottom: 1px solid var(--border);
         }
         .project-card:hover { background: var(--cream); }
         .project-cat { font-size: .7rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.25rem; }
@@ -134,13 +133,13 @@
         .project-link.demo-sphinx:hover { background: #55226e; border-color: #55226e; opacity: 1; }
 
         /* ─── VIDÉO ─────────────────────────────────────────────────────────────
-           Hauteur fixe identique pour toutes les vidéos.
-           Le ratio 16/9 est respecté, la largeur s'adapte à la carte.
+           Taille réduite et compacte — ratio 16:9 préservé.
+           N'impacte que la carte qui la contient.
         ──────────────────────────────────────────────────────────────────────── */
         .video-container {
             position: relative;
             width: 100%;
-            padding-bottom: 56.25%; /* ratio 16:9 */
+            padding-bottom: 52%;   /* légèrement moins haut que le 16:9 pur */
             height: 0;
             overflow: hidden;
             border-radius: 4px;
@@ -180,7 +179,7 @@
             .skills-row { grid-template-columns: repeat(2, 1fr); }
             .tools-band { padding: 2rem; flex-direction: column; gap: 1.5rem; }
             .projects { padding: 5rem 2rem; }
-            .projects-grid { grid-template-columns: 1fr; }
+            .projects-grid { column-count: 1; }
             .contact { grid-template-columns: 1fr; padding: 5rem 2rem; gap: 3rem; }
         }
     </style>
