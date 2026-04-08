@@ -28,7 +28,7 @@ Portfolio/
 | Fiabilisation dataset & attrition télécom | Python, Pandas, Feature Engineering, Random Forest | Data Preparation |
 | Analyse sémantique campagne d'influence | Python, BERTopic, NLP, YouTube API, Sentiment Analysis | Text Mining |
 | Régression logistique — Risque cardiaque | R, GLM, Odds Ratio, ggplot2 | Statistiques |
-| Dashboard pilotage commercial | Dataviv, CRM, DataViz, NPS | Visualisation |
+| Dashboard pilotage commercial | PowerBI, CRM, Dashboard, Supply Chain | Visualisation |
 | Automatisation reporting segmenté | SAS EG, Macro SAS, PROC SQL, PROC SGPLOT | Automatisation |
 | Mémoire Master 1 | Recherche qualitative, Marketing, Entretiens | Recherche |
 | Automatisation workflows N8N | N8N, API | Workflow | Automatisation |
