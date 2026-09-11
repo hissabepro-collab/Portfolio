@@ -29,7 +29,7 @@ Portfolio/
 | Analyse sémantique campagne d'influence | Python, BERTopic, NLP, YouTube API, Sentiment Analysis | Text Mining |
 | Régression logistique — Risque cardiaque | R, GLM, Odds Ratio, ggplot2 | Statistiques |
 | Dashboard pilotage commercial | PowerBI, CRM, Dashboard, Supply Chain | Visualisation |
-| Automatisation reporting segmenté | SAS EG, Macro SAS, PROC SQL, PROC SGPLOT | Automatisation |
+| Segmentation client automatisée | SAS EG, Macro SAS, PROC SQL, PROC SGPLOT | Automatisation |
 | Mémoire Master 1 | Recherche qualitative, Marketing, Entretiens | Recherche |
 | Automatisation workflows N8N | N8N, API | Automatisation, Workflow |
 | Générateur de données CSV fictives | Python, CSV, Data | Automatisation |
