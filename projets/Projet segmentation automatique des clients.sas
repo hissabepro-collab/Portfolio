@@ -1,6 +1,6 @@
 /*===========================================================================================================
   PROJET  : Analyse de la Sur- et Sous-Sollicitation Client
-  AUTEUR  : [Votre nom]
+  AUTEUR  : Hissa BERTON
   DATE    : 2026
   OBJECTIF: Etudier les patterns de sollicitation commerciale pour segmenter la clientele
             et piloter la pression marketing de maniere data-driven.
