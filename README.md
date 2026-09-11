@@ -15,9 +15,9 @@ Bienvenue sur mon portfolio de projets data. Je suis Analyst CRM en alternance a
 Portfolio/
 ├── index.html                     → Site portfolio
 ├── README                         → Présentation du git
-  ├── pdf/                         → Rapports et livrables PDF, démo et images
-  └── projets/                     → Notebooks et scripts
-     └── suivi candidatures n8n    → Script n8n
+├── pdf/                           → Rapports et livrables PDF, démo et images
+└── projets/                       → Notebooks et scripts
+    └── suivi candidatures n8n     → Script n8n
 ```
 
 ## Projets
