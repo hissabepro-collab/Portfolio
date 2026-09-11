@@ -31,7 +31,7 @@ Portfolio/
 | Dashboard pilotage commercial | PowerBI, CRM, Dashboard, Supply Chain | Visualisation |
 | Automatisation reporting segmenté | SAS EG, Macro SAS, PROC SQL, PROC SGPLOT | Automatisation |
 | Mémoire Master 1 | Recherche qualitative, Marketing, Entretiens | Recherche |
-| Automatisation workflows N8N | N8N, API | Workflow | Automatisation |
+| Automatisation workflows N8N | N8N, API | Automatisation, Workflow |
 | Générateur de données CSV fictives | Python, CSV, Data | Automatisation |
 | CV - Hissa Berton | Data Analyst, Alternance | Curriculum Vitae |
 
