@@ -166,7 +166,7 @@
             "Notes": "={{ $json.notes }}",
             "Salaire ": "={{ $json.salaire }}",
             "Statut ": "={{ $json.statut }}",
-            "Contact RH - Prénom": "={{ $json.rhPrenom }}",
+            "Contact RH — Prénom": "={{ $json.rhPrenom }}",
             "Date ": "={{ $json.date }}"
           },
           "matchingColumns": [],
@@ -265,8 +265,8 @@
               "canBeUsedToMatch": true
             },
             {
-              "id": "Contact RH - Prénom",
-              "displayName": "Contact RH - Prénom",
+              "id": "Contact RH — Prénom",
+              "displayName": "Contact RH — Prénom",
               "required": false,
               "defaultMatch": false,
               "display": true,
