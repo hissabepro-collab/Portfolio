@@ -12,16 +12,9 @@ const TELEGRAM_CHAT_ID = 'VOTRE_TELEGRAM_CHAT_ID';
 const SHEET_NAME = 'Candidatures';
 
 // Colonnes (index 0)
-const COL_DATE = 0;
-const COL_ENTREPRISE = 1;
-const COL_POSTE = 2;
-const COL_PLATEFORME = 3;
-const COL_CONTRAT = 4;
-const COL_VILLE = 5;
-const COL_SALAIRE = 6;
-const COL_SECTEUR = 7;
-const COL_STATUT = 8;
-const COL_RELANCE = 9;
+const COL_ENTREPRISE_R = 1;
+const COL_POSTE_R = 2;
+const COL_STATUT_R = 8;
 
 // ============================================================
 // FONCTION UTILITAIRE — Envoyer un message Telegram

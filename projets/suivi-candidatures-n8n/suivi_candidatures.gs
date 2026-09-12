@@ -1,146 +1,292 @@
 // ============================================================
-// DÉTECTION RÉPONSES RECRUTEURS — Hissa Berton
-// Analyse les emails avec Gemini et met à jour le Sheet
-// NB: TELEGRAM_TOKEN, TELEGRAM_CHAT_ID, SHEET_NAME 
-// sont déjà déclarés dans suivi_candidatures.gs
+// SUIVI CANDIDATURES — Hissa Berton
+// Google Apps Script
+// Script 1 : Rappel relance tous les soirs à 20h
+// Script 2 : Stats hebdo tous les dimanches à 10h
+// Script 3 : Mise à jour statut via réponse Telegram
 // ============================================================
 
-const GEMINI_API_KEY = 'VOTRE_CLE_GEMINI_API';
+// ===== CONFIGURATION =====
+const TELEGRAM_TOKEN = 'VOTRE_TOKEN_TELEGRAM';
+const TELEGRAM_CHAT_ID = 'VOTRE_TELEGRAM_CHAT_ID';
+const SHEET_NAME = 'Candidatures';
 
-// Colonnes Sheet (index 0)
-const COL_ENTREPRISE_R = 1;
-const COL_POSTE_R = 2;
-const COL_STATUT_R = 8;
+// Colonnes (index 0)
+const COL_DATE = 0;
+const COL_ENTREPRISE = 1;
+const COL_POSTE = 2;
+const COL_PLATEFORME = 3;
+const COL_CONTRAT = 4;
+const COL_VILLE = 5;
+const COL_SALAIRE = 6;
+const COL_SECTEUR = 7;
+const COL_STATUT = 8;
+const COL_RELANCE = 9;
 
 // ============================================================
-// Analyser l'email avec Gemini
+// FONCTION UTILITAIRE — Envoyer un message Telegram
 // ============================================================
-function analyserAvecGemini(sujet, corps) {
-  const prompt = 'Tu analyses des emails de réponse à des candidatures emploi. Réponds UNIQUEMENT par un mot parmi : Entretien, Refus, Offre, Autre\n\n- Entretien : le recruteur propose un entretien, appel, visio\n- Refus : candidature refusée, sans suite, profil ne correspond pas\n- Offre : proposition de contrat, embauche confirmée\n- Autre : accusé de réception, demande info, ou email non lié\n\nSujet : ' + sujet + '\n\nCorps : ' + corps.substring(0, 1000) + '\n\nRéponds uniquement : Entretien, Refus, Offre, ou Autre';
-
-  const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + GEMINI_API_KEY;
-  
-  try {
-    const response = UrlFetchApp.fetch(url, {
-      method: 'post',
-      contentType: 'application/json',
-      payload: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0, maxOutputTokens: 10 }
-      }),
-      muteHttpExceptions: true
-    });
-
-    const result = JSON.parse(response.getContentText());
-    const text = result.candidates[0].content.parts[0].text.trim();
-    
-    if (text.includes('Entretien')) return 'Entretien';
-    if (text.includes('Refus')) return 'Refus';
-    if (text.includes('Offre')) return 'Offre';
-    return 'Autre';
-  } catch(e) {
-    Logger.log('Erreur Gemini: ' + e.toString());
-    return 'Autre';
-  }
+function sendTelegram(message) {
+  const url = 'https://api.telegram.org/bot' + TELEGRAM_TOKEN + '/sendMessage';
+  const payload = {
+    chat_id: TELEGRAM_CHAT_ID,
+    text: message,
+    parse_mode: 'Markdown'
+  };
+  const options = {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+  UrlFetchApp.fetch(url, options);
 }
 
 // ============================================================
-// Trouver la ligne dans le Sheet
+// SCRIPT 1 — Rappel relance à 20h
+// Vérifie si des relances sont prévues aujourd'hui
 // ============================================================
-function trouverLigneEntreprise(sheet, expediteur, sujet) {
-  const data = sheet.getDataRange().getValues();
-  const domain = (expediteur.match(/@([\w.-]+)/) || ['',''])[1].toLowerCase();
-  
-  let bestMatch = -1;
-  let bestScore = 0;
-  
-  for (let i = 1; i < data.length; i++) {
-    const row = data[i];
-    const entreprise = (row[COL_ENTREPRISE_R] || '').toLowerCase();
-    const statut = (row[COL_STATUT_R] || '').toString().trim();
-    
-    if (statut === 'Refus' || statut === 'Offre') continue;
-    if (!entreprise || entreprise === '— a completer') continue;
-    
-    let score = 0;
-    const mots = entreprise.split(' ').filter(m => m.length > 3);
-    mots.forEach(mot => {
-      if (domain.includes(mot)) score += 3;
-      if (sujet.toLowerCase().includes(mot)) score += 2;
-      if (expediteur.toLowerCase().includes(mot)) score += 2;
-    });
-    
-    if (score > bestScore) {
-      bestScore = score;
-      bestMatch = i + 1;
-    }
-  }
-  
-  return bestScore >= 2 ? bestMatch : -1;
-}
-
-// ============================================================
-// Fonction principale — toutes les 30 minutes
-// ============================================================
-function detecterReponsesRecruteurs() {
+function rappelRelance() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName(SHEET_NAME);
-  
-  const threads = GmailApp.search('is:unread newer_than:1d -from:linkedin -from:indeed -from:welcometothejungle -from:apec -from:noreply -from:no-reply');
-  
-  if (threads.length === 0) return;
-  
-  threads.forEach(function(thread) {
-    const messages = thread.getMessages();
-    const msg = messages[messages.length - 1];
-    
-    const sujet = msg.getSubject() || '';
-    const corps = msg.getPlainBody() || '';
-    const expediteur = msg.getFrom() || '';
-    
-    if (corps.length < 50) return;
-    
-    const statut = analyserAvecGemini(sujet, corps);
-    if (statut === 'Autre') return;
-    
-    const ligne = trouverLigneEntreprise(sheet, expediteur, sujet);
-    
-    if (ligne === -1) {
-      sendTelegram('📬 *Réponse recruteur détectée !*\n\n📧 De : ' + expediteur + '\n📋 Sujet : ' + sujet + '\n🎯 Statut : *' + statut + '*\n\n⚠️ Entreprise non trouvée dans le Sheet.\nMets à jour manuellement !');
-      return;
+  const data = sheet.getDataRange().getValues();
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const relancesAujourdhui = [];
+
+  // Parcourir toutes les lignes (ignorer l'en-tête ligne 0)
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const statut = row[COL_STATUT] ? row[COL_STATUT].toString().trim() : '';
+    const relanceDateRaw = row[COL_RELANCE];
+
+    if (!relanceDateRaw) continue;
+    if (statut === 'Relancée' || statut === 'Refus' || statut === 'Offre') continue;
+
+    const relanceDate = new Date(relanceDateRaw);
+    relanceDate.setHours(0, 0, 0, 0);
+
+    if (relanceDate.getTime() === today.getTime()) {
+      relancesAujourdhui.push({
+        ligne: i + 1, // numéro de ligne dans le sheet (1-based)
+        entreprise: row[COL_ENTREPRISE] || '— À compléter',
+        poste: row[COL_POSTE] || '— À compléter',
+        plateforme: row[COL_PLATEFORME] || '— À compléter',
+        statut: statut,
+        date: row[COL_DATE] || ''
+      });
     }
-    
-    const data = sheet.getDataRange().getValues();
-    const row = data[ligne - 1];
-    const entreprise = row[COL_ENTREPRISE_R];
-    const poste = row[COL_POSTE_R];
-    const ancienStatut = (row[COL_STATUT_R] || '').toString();
-    
-    if (ancienStatut === 'Offre') return;
-    
-    sheet.getRange(ligne, COL_STATUT_R + 1).setValue(statut);
-    
-    const emoji = statut === 'Entretien' ? '🎉' : statut === 'Refus' ? '😔' : '🏆';
-    sendTelegram(emoji + ' *Réponse recruteur !*\n\n🏢 *' + entreprise + '*\n💼 ' + poste + '\n\n📊 Statut → *' + statut + '*\n📧 De : ' + expediteur);
-    
-    thread.markRead();
+  }
+
+  if (relancesAujourdhui.length === 0) {
+    // Pas de relance aujourd'hui - pas de message
+    return;
+  }
+
+  // Construire le message Telegram
+  let message = '⏰ *Rappel relance du soir !*\n\n';
+  message += relancesAujourdhui.length + ' candidature(s) à relancer ce soir :\n\n';
+
+  relancesAujourdhui.forEach((r, idx) => {
+    message += '*' + (idx + 1) + '. ' + r.entreprise + '*\n';
+    message += '💼 ' + r.poste + '\n';
+    message += '🌐 ' + r.plateforme + '\n';
+    message += '📅 Candidature du : ' + r.date + '\n';
+    message += '📊 Statut actuel : ' + (r.statut || 'Envoyée') + '\n';
+    message += '👉 Réponds *RELANCE' + r.ligne + '* pour marquer comme relancée\n\n';
   });
+
+  message += '─────────────────\n';
+  message += '💡 Ex: réponds *RELANCE2* pour la ligne 2';
+
+  sendTelegram(message);
 }
 
 // ============================================================
-// Installer le trigger — UNE SEULE FOIS
+// SCRIPT 2 — Stats hebdomadaires le dimanche à 10h
 // ============================================================
-function installerTriggerReponses() {
-  ScriptApp.getProjectTriggers().forEach(function(t) {
-    if (t.getHandlerFunction() === 'detecterReponsesRecruteurs') {
-      ScriptApp.deleteTrigger(t);
+function statsHebdo() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  const data = sheet.getDataRange().getValues();
+
+  // Période : 7 derniers jours
+  const today = new Date();
+  today.setHours(23, 59, 59, 0);
+  const lastWeek = new Date();
+  lastWeek.setDate(lastWeek.getDate() - 7);
+  lastWeek.setHours(0, 0, 0, 0);
+
+  // Compteurs globaux (toutes les candidatures)
+  let totalCandidatures = 0;
+  let totalEnvoyees = 0;
+  let totalEntretiens = 0;
+  let totalRefus = 0;
+  let totalOffres = 0;
+  let totalRelancees = 0;
+  let relancesAVenir = 0;
+
+  // Compteurs semaine
+  let candidaturesSemaine = 0;
+
+  const upcoming = new Date();
+  upcoming.setDate(upcoming.getDate() + 7);
+
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (!row[COL_ENTREPRISE]) continue;
+
+    const statut = row[COL_STATUT] ? row[COL_STATUT].toString().trim() : 'Envoyée';
+    const dateRaw = row[COL_DATE];
+    const relanceDateRaw = row[COL_RELANCE];
+
+    totalCandidatures++;
+
+    // Stats par statut
+    if (statut === 'Envoyée') totalEnvoyees++;
+    else if (statut === 'Entretien') totalEntretiens++;
+    else if (statut === 'Refus') totalRefus++;
+    else if (statut === 'Offre') totalOffres++;
+    else if (statut === 'Relancée') totalRelancees++;
+
+    // Candidatures cette semaine
+    if (dateRaw) {
+      const dateCandidat = new Date(dateRaw);
+      if (dateCandidat >= lastWeek && dateCandidat <= today) {
+        candidaturesSemaine++;
+      }
     }
-  });
-  
-  ScriptApp.newTrigger('detecterReponsesRecruteurs')
+
+    // Relances à venir dans les 7 prochains jours
+    if (relanceDateRaw && statut !== 'Refus' && statut !== 'Offre' && statut !== 'Relancée') {
+      const relanceDate = new Date(relanceDateRaw);
+      relanceDate.setHours(0, 0, 0, 0);
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      if (relanceDate >= todayStart && relanceDate <= upcoming) {
+        relancesAVenir++;
+      }
+    }
+  }
+
+  const tauxReponse = totalCandidatures > 0
+    ? Math.round(((totalEntretiens + totalOffres) / totalCandidatures) * 100)
+    : 0;
+
+  let message = '📊 *Bilan hebdomadaire — Semaine du ' + lastWeek.toLocaleDateString('fr-FR') + '*\n\n';
+
+  message += '📬 *Cette semaine :*\n';
+  message += '   Nouvelles candidatures : *' + candidaturesSemaine + '*\n\n';
+
+  message += '📈 *Bilan global :*\n';
+  message += '   Total candidatures : *' + totalCandidatures + '*\n';
+  message += '   En attente : *' + totalEnvoyees + '*\n';
+  message += '   Relancées : *' + totalRelancees + '*\n';
+  message += '   Entretiens : *' + totalEntretiens + '*\n';
+  message += '   Refus : *' + totalRefus + '*\n';
+  message += '   Offres reçues : *' + totalOffres + '*\n\n';
+
+  message += '🎯 *Taux de réponse : ' + tauxReponse + '%*\n\n';
+
+  message += '⏰ *Relances à faire cette semaine : ' + relancesAVenir + '*\n\n';
+
+  message += '─────────────────\n';
+
+  if (totalOffres > 0) {
+    message += '🏆 Bravo ! Tu as ' + totalOffres + ' offre(s) en cours !\n';
+  } else if (totalEntretiens > 0) {
+    message += '💪 ' + totalEntretiens + ' entretien(s) en cours — continue !\n';
+  } else if (totalCandidatures >= 10) {
+    message += '🚀 ' + totalCandidatures + ' candidatures envoyées — persévère !\n';
+  } else {
+    message += '💡 Continue à postuler, les opportunités arrivent !\n';
+  }
+
+  sendTelegram(message);
+}
+
+// ============================================================
+// SCRIPT 3 — Webhook Telegram pour mise à jour statut
+// Reçoit "RELANCE12" et met à jour la ligne 12 du Sheet
+// ============================================================
+function doPost(e) {
+  try {
+    const update = JSON.parse(e.postData.contents);
+    const message = update.message || update.edited_message;
+    if (!message || !message.text) return;
+
+    const text = message.text.trim().toUpperCase();
+    const chatId = message.chat.id.toString();
+
+    // Vérifier que c'est bien toi
+    if (chatId !== TELEGRAM_CHAT_ID) return;
+
+    // Détecter commande RELANCEX
+    const match = text.match(/^RELANCE(\d+)$/);
+    if (match) {
+      const ligneNum = parseInt(match[1]);
+      majStatutRelance(ligneNum);
+    }
+
+  } catch(err) {
+    Logger.log('Erreur doPost: ' + err.toString());
+  }
+}
+
+// ============================================================
+// SCRIPT 4 — Mettre à jour le statut en "Relancée"
+// ============================================================
+function majStatutRelance(ligneNum) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(SHEET_NAME);
+  const data = sheet.getDataRange().getValues();
+
+  // Vérifier que la ligne existe
+  if (ligneNum < 2 || ligneNum > data.length) {
+    sendTelegram('❌ Ligne ' + ligneNum + ' introuvable dans le Sheet.');
+    return;
+  }
+
+  const row = data[ligneNum - 1];
+  const entreprise = row[COL_ENTREPRISE] || '?';
+  const poste = row[COL_POSTE] || '?';
+
+  // Mettre à jour le statut colonne I (index 8, colonne 9)
+  sheet.getRange(ligneNum, COL_STATUT + 1).setValue('Relancée');
+
+  sendTelegram(
+    '✅ *Statut mis à jour !*\n\n' +
+    '🏢 *' + entreprise + '*\n' +
+    '💼 ' + poste + '\n\n' +
+    '📊 Statut → *Relancée* ✓'
+  );
+}
+
+// ============================================================
+// INSTALLATION DES TRIGGERS
+// Lance cette fonction UNE SEULE FOIS pour installer les triggers
+// ============================================================
+function installerTriggers() {
+  // Supprimer les anciens triggers
+  ScriptApp.getProjectTriggers().forEach(t => ScriptApp.deleteTrigger(t));
+
+  // Trigger rappel relance — tous les jours à 20h
+  ScriptApp.newTrigger('rappelRelance')
     .timeBased()
-    .everyMinutes(30)
+    .everyDays(1)
+    .atHour(20)
     .create();
-    
-  Logger.log('✅ Trigger installé — toutes les 30 minutes');
+
+  // Trigger stats hebdo — tous les dimanches à 10h
+  ScriptApp.newTrigger('statsHebdo')
+    .timeBased()
+    .onWeekDay(ScriptApp.WeekDay.SUNDAY)
+    .atHour(10)
+    .create();
+
+  Logger.log('✅ Triggers installés :');
+  Logger.log('  - Rappel relance : tous les jours à 20h');
+  Logger.log('  - Stats hebdo : tous les dimanches à 10h');
 }
